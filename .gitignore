@@ -1,2 +1,3 @@
 dist/*
+transmission-daemon@patapon.info/locale/*/LC_MESSAGES/*.mo
 transmission-daemon@patapon.info/schemas/gschemas.compiled
