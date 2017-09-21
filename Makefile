@@ -12,7 +12,7 @@ build: clean
 	cd ${SOURCE} && zip -qr ../build.zip *
 
 install:
-	cp -r ${SOURCE} ${TARGET}/${SOURCE}
+	cp -r ${SOURCE} ${EXTDIR}/${SOURCE}
 
 uninstall:
-	rm -r ${TARGET}/${SOURCE}
+	rm -r ${EXTDIR}/${SOURCE}
