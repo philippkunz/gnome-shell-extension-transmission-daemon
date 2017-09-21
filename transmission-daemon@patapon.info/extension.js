@@ -1296,13 +1296,13 @@ const TorrentsControls = new Lang.Class({
                 this.ctrl_btns.add_actor(button.actor);
             }
             this.actor.show();
-            button.actor.connect('notify::hover', Lang.bind(this, function(button) {
-                this.hover = button.hover;
+            button.actor.connect('notify::hover', Lang.bind(this, function(btn) {
+                this.hover = btn.hover;
                 if (this.hover) {
-                    if (button._delegate._info != this.ctrl_info.text) {
+                    if (btn._delegate._info != this.ctrl_info.text) {
                         this._old_info = this.ctrl_info.text;
                     }
-                    this.ctrl_info.text = button._delegate._info;
+                    this.ctrl_info.text = btn._delegate._info;
                 } else {
                     this.ctrl_info.text = this._old_info;
                 }

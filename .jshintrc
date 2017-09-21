@@ -21,8 +21,7 @@
     "nocomma": true,
     "nonbsp": true,
     "nonew": true,
-
-    "shadow": false,
+    "shadow": "outer",
     "singleGroups": true,
     "trailingcomma": true,
     "undef": true,
