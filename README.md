@@ -20,7 +20,8 @@ cd gnome-shell-extension-transmission-daemon
 make install
 ```
 
-Restart the shell (atf-f2, type "r") to enable the extension.
+If you do not have `gnome-shell-devel` installed, the extension will start
+working immediately. If not, restart the shell (atf-f2, type "r") to enable it.
 
 ### Older Versions of Gnome Shell
 - the latest version supporting `gnome-shell` < 3.10 is tag 1.0.0

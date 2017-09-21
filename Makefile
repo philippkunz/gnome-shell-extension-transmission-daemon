@@ -1,4 +1,4 @@
-SOURCE := transmission-daemon@patapon.info
+NAME := transmission-daemon@patapon.info
 EXTDIR := ~/.local/share/gnome-shell/extensions
 
 
@@ -9,10 +9,12 @@ clean:
 	rm -f build.zip
 
 build: clean
-	cd ${SOURCE} && zip -qr ../build.zip *
+	cd ${NAME} && zip -qr ../build.zip *
 
 install:
-	cp -r ${SOURCE} ${EXTDIR}/${SOURCE}
+	cp -r ${NAME} ${EXTDIR}/${NAME}
+	gnome-shell-extension-tool -e ${NAME}
 
 uninstall:
-	rm -r ${EXTDIR}/${SOURCE}
+	gnome-shell-extension-tool -d ${NAME}
+	rm -r ${EXTDIR}/${NAME}
