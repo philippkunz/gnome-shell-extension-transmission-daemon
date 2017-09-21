@@ -34,7 +34,5 @@
 
     "unused": false,
 
-    "varstmt": false,
-
-    "asi": true
+    "varstmt": false
 }

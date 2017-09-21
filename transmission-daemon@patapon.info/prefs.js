@@ -38,7 +38,7 @@ function init() {
         stats_torrents: {label: _('Show the number of torrents in the status bar'), type: 'b'},
         stats_icons: {label: _('Show upload and download icons in the status bar'), type: 'b'},
         stats_numeric: {label: _('Show upload and download speed in the status bar'), type: 'b'}
-    }
+    };
 }
 
 function buildPrefsWidget() {
@@ -84,8 +84,8 @@ function createStringSetting(setting) {
     }
 
     if (settings[setting].help) {
-        setting_label.set_tooltip_text(settings[setting].help)
-        setting_string.set_tooltip_text(settings[setting].help)
+        setting_label.set_tooltip_text(settings[setting].help);
+        setting_string.set_tooltip_text(settings[setting].help);
     }
 
     hbox.pack_start(setting_label, true, true, 0);
@@ -111,8 +111,8 @@ function createIntSetting(setting) {
     });
 
     if (settings[setting].help) {
-        setting_label.set_tooltip_text(settings[setting].help)
-        setting_int.set_tooltip_text(settings[setting].help)
+        setting_label.set_tooltip_text(settings[setting].help);
+        setting_int.set_tooltip_text(settings[setting].help);
     }
 
     hbox.pack_start(setting_label, true, true, 0);
@@ -135,8 +135,8 @@ function createBoolSetting(setting) {
     });
 
     if (settings[setting].help) {
-        setting_label.set_tooltip_text(settings[setting].help)
-        setting_switch.set_tooltip_text(settings[setting].help)
+        setting_label.set_tooltip_text(settings[setting].help);
+        setting_switch.set_tooltip_text(settings[setting].help);
     }
 
     hbox.pack_start(setting_label, true, true, 0);
