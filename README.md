@@ -11,7 +11,8 @@ All credit for this project goes to the original author, Jean-Philippe Braun
 ### Via extensions.gnome.org
 https://extensions.gnome.org/extension/365/transmission-daemon-indicator/
 
-TODO: re-release to allow installation on newer versions.
+TODO: get access to upstream project or create rebrand
+TODO: set up deployment
 
 ### Manual
 ```bash

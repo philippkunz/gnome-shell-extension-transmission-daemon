@@ -11,8 +11,18 @@ jobs:
       - run: pip install pre-commit
       - run: pre-commit run --all-files
 
+  build:
+    docker:
+      - image: debian:jessie
+    steps:
+      - run: apt-get update
+      - run: apt-get install -qy gettext libglib2.0-dev make zip
+      - checkout
+      - run: make build
+
 workflows:
   version: 2
   run-jobs:
     jobs:
       - check
+      - build
