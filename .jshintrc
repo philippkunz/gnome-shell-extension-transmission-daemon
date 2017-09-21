@@ -31,7 +31,6 @@
     "trailingcomma": false,
 
     "undef": false,
-
     "unused": false,
     "varstmt": true
 }

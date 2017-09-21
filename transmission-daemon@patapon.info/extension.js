@@ -16,18 +16,16 @@
 'use strict';  /* jshint -W097 */
 
 const Clutter = imports.gi.Clutter;
+const Gio = imports.gi.Gio;
+const Gtk = imports.gi.Gtk;
+const Lang = imports.lang;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
-const Soup = imports.gi.Soup;
-const Lang = imports.lang;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const St = imports.gi.St;
-const Util = imports.misc.util;
-const Gtk = imports.gi.Gtk;
-const ShellDBus = imports.ui.shellDBus;
 const Shell = imports.gi.Shell;
-const Gio = imports.gi.Gio;
+const Soup = imports.gi.Soup;
+const St = imports.gi.St;
 
 let upArrow = "";
 let downArrow = "";
@@ -43,8 +41,6 @@ catch(e) {
 const enabledIcon = "my-transmission-symbolic";
 const errorIcon = "my-transmission-error-symbolic";
 const connectIcon = "my-transmission-connecting-symbolic";
-
-const ExtensionUtils = imports.misc.extensionUtils;
 
 const Gettext = imports.gettext.domain('gnome-shell-extension-transmission-daemon');
 const _ = Gettext.gettext;

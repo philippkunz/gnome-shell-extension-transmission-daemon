@@ -14,7 +14,6 @@
 **/
 
 const Gtk = imports.gi.Gtk;
-const Gdk = imports.gi.Gdk;
 
 const Gettext = imports.gettext.domain('gnome-shell-extension-transmission-daemon');
 const _ = Gettext.gettext;
