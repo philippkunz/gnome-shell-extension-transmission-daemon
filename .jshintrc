@@ -33,6 +33,5 @@
     "undef": false,
 
     "unused": false,
-
-    "varstmt": false
+    "varstmt": true
 }

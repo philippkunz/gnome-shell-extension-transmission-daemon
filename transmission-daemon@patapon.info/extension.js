@@ -1647,14 +1647,14 @@ function readableSize(size) {
 }
 
 function timeInterval(secs) {
-    var days    = Math.floor (secs / 86400),
-        hours   = Math.floor ((secs % 86400) / 3600),
-        minutes = Math.floor ((secs % 3600) / 60),
-        seconds = Math.floor (secs % 60),
-        d = days    + ' ' + (days    > 1 ? _('days')    : _('day')),
-        h = hours   + ' ' + (hours   > 1 ? _('hours')   : _('hour')),
-        m = minutes + ' ' + (minutes > 1 ? _('minutes') : _('minute')),
-        s = seconds + ' ' + (seconds > 1 ? _('seconds') : _('second'));
+    const days    = Math.floor (secs / 86400),
+          hours   = Math.floor ((secs % 86400) / 3600),
+          minutes = Math.floor ((secs % 3600) / 60),
+          seconds = Math.floor (secs % 60),
+          d = days    + ' ' + (days    > 1 ? _('days')    : _('day')),
+          h = hours   + ' ' + (hours   > 1 ? _('hours')   : _('hour')),
+          m = minutes + ' ' + (minutes > 1 ? _('minutes') : _('minute')),
+          s = seconds + ' ' + (seconds > 1 ? _('seconds') : _('second'));
 
     if (days) {
         if (days >= 4 || !hours) {
