@@ -14,3 +14,11 @@ repos:
     -   id: file-contents-sorter
         files: .gitignore
     -   id: trailing-whitespace
+-   repo: git://github.com/pre-commit/mirrors-fixmyjs
+    sha: v2.0.0
+    hooks:
+    -   id: fixmyjs
+-   repo: git://github.com/pre-commit/mirrors-jshint
+    sha: v2.9.5
+    hooks:
+    -   id: jshint

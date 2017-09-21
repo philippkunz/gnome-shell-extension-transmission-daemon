@@ -1,0 +1,40 @@
+{
+    "esversion": 6,
+    "bitwise": true,
+
+    "curly": false,
+
+    "eqeqeq": false,
+
+    "forin": false,
+    "freeze": true,
+    "futurehostile": true,
+    "globals": {
+        "escape": false,
+        "imports": false,
+        "global": false,
+        "log": false
+    },
+
+    "latedef": false,
+    "noarg": true,
+    "nocomma": true,
+    "nonbsp": true,
+    "nonew": true,
+
+    "shadow": false,
+
+    "singleGroups": false,
+
+    "strict": false,
+
+    "trailingcomma": false,
+
+    "undef": false,
+
+    "unused": false,
+
+    "varstmt": false,
+
+    "asi": true
+}

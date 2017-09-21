@@ -1,4 +1,3 @@
-/* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: nil -*- */
 /**
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -50,12 +49,15 @@ function buildPrefsWidget() {
     let hbox;
 
     for (let setting in settings) {
-        if (settings[setting].type == 's')
+        if (settings[setting].type == 's') {
             hbox = createStringSetting(setting);
-        if (settings[setting].type == "i")
+        }
+        if (settings[setting].type == "i") {
             hbox = createIntSetting(setting);
-        if (settings[setting].type == "b")
+        }
+        if (settings[setting].type == "b") {
             hbox = createBoolSetting(setting);
+        }
         vbox.add(hbox);
     }
 

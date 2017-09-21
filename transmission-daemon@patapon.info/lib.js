@@ -1,4 +1,3 @@
-/* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: nil -*- */
 /**
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -33,8 +32,9 @@ function getSettings(extension) {
     }
     // Extension installed system-wide
     else {
-        if (Gio.Settings.list_schemas().indexOf(schemaName) == -1)
+        if (Gio.Settings.list_schemas().indexOf(schemaName) == -1) {
             throw "Schema \"%s\" not found.".format(schemaName);
+        }
         return new Gio.Settings({ schema: schemaName });
     }
 }

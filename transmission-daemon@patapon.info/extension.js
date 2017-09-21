@@ -1,9 +1,3 @@
-/* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: nil -*- */
-/* jshint esnext: true */
-/* global imports: false */
-/* global escape: false */
-/* global log: false */
-/* global global: false */
 /**
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,7 +13,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-'use strict';
+'use strict';  /* jshint -W097 */
 
 const Clutter = imports.gi.Clutter;
 const Main = imports.ui.main;
@@ -126,8 +120,9 @@ let transmissionDaemonIndicator;
 const _httpSession = new Soup.SessionAsync();
 _httpSession.timeout = 10;
 
-if (Soup.Session.prototype.add_feature !== null)
-        Soup.Session.prototype.add_feature.call(_httpSession, new Soup.ProxyResolverDefault());
+if (Soup.Session.prototype.add_feature !== null) {
+    Soup.Session.prototype.add_feature.call(_httpSession, new Soup.ProxyResolverDefault());
+}
 
 const TransmissionDaemonMonitor = new Lang.Class({
     Name: 'TransmissionDaemonMonitor',
@@ -166,11 +161,12 @@ const TransmissionDaemonMonitor = new Lang.Class({
             return;
         }
 
-        if (user && password)
+        if (user && password) {
             auth.authenticate(user, password);
-        else
+        } else {
             transmissionDaemonIndicator.connectionError(ErrorType.AUTHENTICATION_ERROR,
                                                         _("Missing username or password"));
+        }
     },
 
     changeInterval: function(interval) {
@@ -186,9 +182,10 @@ const TransmissionDaemonMonitor = new Lang.Class({
                             Soup.MemoryUse.COPY,
                             JSON.stringify(data),
                             JSON.stringify(data).length);
-        if (this._session_id)
+        if (this._session_id) {
             message.request_headers.append("X-Transmission-Session-Id",
                                                  this._session_id);
+        }
         _httpSession.queue_message(message, Lang.bind(this, callback));
     },
 
@@ -211,11 +208,13 @@ const TransmissionDaemonMonitor = new Lang.Class({
                          "seedRatioLimit", "seedRatioMode"]
             }
         };
-        if (this._torrents !== false)
+        if (this._torrents !== false) {
             params.arguments.ids = "recently-active";
+        }
         this.sendPost(params, this.processList);
-        if (this._timers.list)
+        if (this._timers.list) {
             delete this._timers.list;
+        }
     },
 
     retrieveStats: function() {
@@ -223,8 +222,9 @@ const TransmissionDaemonMonitor = new Lang.Class({
             method: "session-stats"
         };
         this.sendPost(params, this.processStats);
-        if (this._timers.stats)
+        if (this._timers.stats) {
             delete this._timers.stats;
+        }
     },
 
     retrieveSession: function() {
@@ -232,8 +232,9 @@ const TransmissionDaemonMonitor = new Lang.Class({
             method: "session-get"
         };
         this.sendPost(params, this.processSession);
-        if (this._timers.session)
+        if (this._timers.session) {
             delete this._timers.session;
+        }
     },
 
     torrentAction: function(action, torrent_id) {
@@ -309,9 +310,10 @@ const TransmissionDaemonMonitor = new Lang.Class({
                         error = _("Can't connect to Transmission");
                         break;
                 }
-                if (error)
+                if (error) {
                     transmissionDaemonIndicator.connectionError(ErrorType.CONNECTION_ERROR,
                                                                 error);
+                }
                 // clean torrent list on connection error
                 this.torrents = false;
             }
@@ -351,20 +353,23 @@ const TransmissionDaemonMonitor = new Lang.Class({
     },
 
     onSessionAction: function(session, message) {
-        if (message.status_code != 200)
+        if (message.status_code != 200) {
             log(message.response_body.data);
+        }
     },
 
     onTorrentAction: function(session, message) {
-        if (message.status_code != 200)
+        if (message.status_code != 200) {
             log(message.response_body.data);
+        }
     },
 
     onTorrentAdd: function(session, message) {
         let result = JSON.parse(message.response_body.data);
         let added = false;
-        if (result.arguments['torrent-added'])
+        if (result.arguments['torrent-added']) {
             added = true;
+        }
         transmissionDaemonIndicator.torrentAdded(added);
     },
 
@@ -378,8 +383,9 @@ const TransmissionDaemonMonitor = new Lang.Class({
 
     getTorrentById: function(id) {
         for (let i in this._torrents) {
-            if (this._torrents[i].id == id)
+            if (this._torrents[i].id == id) {
                 return this._torrents[i];
+            }
         }
         return null;
     },
@@ -467,8 +473,9 @@ const TransmissionDaemonIndicator = new Lang.Class({
     },
 
     hide: function() {
-        if (!this._always_show)
+        if (!this._always_show) {
             this.actor.hide();
+        }
     },
 
     show: function() {
@@ -480,25 +487,28 @@ const TransmissionDaemonIndicator = new Lang.Class({
         this._status_show_icons = gsettings.get_boolean(TDAEMON_STATS_ICONS_KEY);
         this._status_show_numeric = gsettings.get_boolean(TDAEMON_STATS_NUMERIC_KEY);
         this._always_show = gsettings.get_boolean(TDAEMON_ALWAYS_SHOW_KEY);
-        if (this._always_show)
+        if (this._always_show) {
             this.show();
-        else if (this._state == ErrorType.CONNECTION_ERROR)
+        } else if (this._state == ErrorType.CONNECTION_ERROR) {
             this.hide();
+        }
         this._host = gsettings.get_string(TDAEMON_HOST_KEY);
         let port = gsettings.get_int(TDAEMON_PORT_KEY);
         let rpc_url = gsettings.get_string(TDAEMON_RPC_URL_KEY);
-        if (port == 443)
+        if (port == 443) {
             this._url = 'https://%s%sweb/'.format(this._host, rpc_url);
-        else
+        } else {
             this._url = 'http://%s:%s%sweb/'.format(this._host, port.toString(), rpc_url);
+        }
     },
 
     _onOpenStateChanged: function(menu, open) {
         this.parent(menu, open);
-        if (open)
+        if (open) {
             this._monitor.changeInterval(2);
-        else
+        } else {
             this._monitor.changeInterval(10);
+        }
     },
 
     torrentAdded: function(added) {
@@ -506,10 +516,11 @@ const TransmissionDaemonIndicator = new Lang.Class({
     },
 
     connectionError: function(type, error) {
-        if (type == ErrorType.CONNECTION_ERROR)
+        if (type == ErrorType.CONNECTION_ERROR) {
             this.hide();
-        else
+        } else {
             this.show();
+        }
         this._state = type;
         this.removeTorrents();
         this._icon.icon_name = errorIcon;
@@ -524,9 +535,9 @@ const TransmissionDaemonIndicator = new Lang.Class({
             this._state = ErrorType.NO_ERROR;
             this.checkServer();
             this.show();
-        }
-        else
+        } else {
             this.refreshControls(false);
+        }
     },
 
     checkServer: function() {
@@ -561,28 +572,36 @@ const TransmissionDaemonIndicator = new Lang.Class({
 
         this._nb_torrents = stats.torrentCount;
 
-        if (this._status_show_torrents && stats.torrentCount > 0)
+        if (this._status_show_torrents && stats.torrentCount > 0) {
             stats_text += stats.torrentCount;
+        }
 
         if (stats.downloadSpeed > 10000) {
-            if (stats_text && this._status_show_icons)
+            if (stats_text && this._status_show_icons) {
                 stats_text += " ";
-            if (this._status_show_icons)
+            }
+            if (this._status_show_icons) {
                 stats_text += downArrow;
-            if (this._status_show_numeric)
+            }
+            if (this._status_show_numeric) {
                 stats_text += " %s/s".format(readableSize(stats.downloadSpeed));
+            }
         }
         if (stats.uploadSpeed > 2000) {
-            if (this._status_show_icons && this._status_show_numeric)
+            if (this._status_show_icons && this._status_show_numeric) {
                 stats_text += " ";
-            if (this._status_show_icons)
+            }
+            if (this._status_show_icons) {
                 stats_text += upArrow;
-            if (this._status_show_numeric)
+            }
+            if (this._status_show_numeric) {
                 stats_text += " %s/s".format(readableSize(stats.uploadSpeed));
+            }
         }
 
-        if (stats_text)
+        if (stats_text) {
             stats_text = " " + stats_text;
+        }
 
         this._status.text = stats_text;
 
@@ -599,8 +618,9 @@ const TransmissionDaemonIndicator = new Lang.Class({
 
         this.menu.controls.setInfo(info_text);
 
-        if (!dontChangeState)
+        if (!dontChangeState) {
             this.connectionAvailable();
+        }
     },
 
     refreshControls: function(state_changed) {
@@ -611,10 +631,11 @@ const TransmissionDaemonIndicator = new Lang.Class({
         }
 
         if (this._state == ErrorType.NO_ERROR) {
-            if (this._server_type == "daemon")
+            if (this._server_type == "daemon") {
                 this.menu.controls.addControl(this._web_btn, 0);
-            else
+            } else {
                 this.menu.controls.addControl(this._client_btn, 0);
+            }
             this.menu.controls.addControl(this._add_btn);
             if (this._nb_torrents > 0) {
                 this.menu.controls.addControl(this._stop_btn);
@@ -659,20 +680,21 @@ const TransmissionDaemonIndicator = new Lang.Class({
         if (app.is_on_workspace(workspace)) {
             // If the window is currently focused
             // minimize it and close the menu
-            if (appWin && global.display.focus_window == appWin) {
+            if (appWin && global.display.focus_window == appWin) // Bring the window to front
+            {
                 appWin.minimize();
                 this.menu.close();
-            }
-            // Bring the window to front
-            else
+            } else {
                 app.activate_full(-1, 0);
+            }
         }
         else {
             // Change to the current workspace and
             // bring to front
-            if (appWin)
+            if (appWin) {
                 appWin.change_workspace_by_index(workspace_index, false,
                                                  global.get_current_time());
+            }
             app.activate_full(-1, 0);
         }
     },
@@ -682,8 +704,9 @@ const TransmissionDaemonIndicator = new Lang.Class({
         let windowActors = global.get_window_actors();
         for (let i in windowActors) {
             let win = windowActors[i].get_meta_window();
-            if (tracker.get_window_app(win) == app)
+            if (tracker.get_window_app(win) == app) {
                 return win;
+            }
         }
         return false;
     },
@@ -738,17 +761,19 @@ const TransmissionDaemonIndicator = new Lang.Class({
     },
 
     updateTorrent: function(torrent) {
-        if (!this._torrents[torrent.id])
+        if (!this._torrents[torrent.id]) {
             this.addTorrent(torrent);
-        else
+        } else {
             this._torrents[torrent.id].update(torrent);
+        }
     },
 
     addTorrent: function(torrent, visible) {
         let DisplayClass = TorrentDisplayClasses[gsettings.get_enum(TDAEMON_TORRENTS_DISPLAY)];
         this._torrents[torrent.id] = new DisplayClass(torrent);
-        if (visible === false)
+        if (visible === false) {
             this._torrents[torrent.id].hide();
+        }
         this.menu.addMenuItem(this._torrents[torrent.id]);
     },
 
@@ -799,14 +824,17 @@ const TransmissionTorrentSmall = new Lang.Class({
         let ratio = this._params.uploadRatio.toFixed(1);
         let percentDone = (this._params.percentDone * 100).toFixed(1) + "%";
 
-        if (ratio > 0)
+        if (ratio > 0) {
             infos.push('<span foreground="#aaa" size="x-small">' + _('Ratio %s').format(ratio) + '</span>');
-        if (this._params.rateDownload > 0)
+        }
+        if (this._params.rateDownload > 0) {
             infos.push('<span foreground="#97EE4D"><b>%s</b> %s/s</span>'.format(downArrow,
                                                                                  rateDownload));
-        if (this._params.rateUpload > 0)
+        }
+        if (this._params.rateUpload > 0) {
             infos.push('<span foreground="#4DBFEE">%s %s/s</span>'.format(upArrow,
                                                                           rateUpload));
+        }
         infos.push('<span foreground="#ccc" size="x-small">%s</span>'.format(percentDone));
 
         this._info = infos.join('<span foreground="#aaa">,</span> ');
@@ -883,10 +911,11 @@ const TransmissionTorrent = new Lang.Class({
     getStateString: function(state) {
         switch(state) {
             case TransmissionStatus.STOPPED:
-                if (this._params.isFinished)
+                if (this._params.isFinished) {
                     return _("Seeding complete");
-                else
+                } else {
                     return _("Paused");
+                }
                 break;
             case TransmissionStatus.CHECK_WAIT:
                 return _("Queued for verification");
@@ -938,7 +967,7 @@ const TransmissionTorrent = new Lang.Class({
                 break;
             case TransmissionStatus.DOWNLOAD_WAIT:
             case TransmissionStatus.DOWNLOAD:
-                if (this._params.status == TransmissionStatus.DOWNLOAD)
+                if (this._params.status == TransmissionStatus.DOWNLOAD) {
                     this._infos.seeds = _("Downloading from %s of %s peers - %s %s/s %s %s/s").format(
                                                 this._params.peersSendingToUs,
                                                 this._params.peersConnected,
@@ -946,14 +975,16 @@ const TransmissionTorrent = new Lang.Class({
                                                 rateDownload,
                                                 upArrow,
                                                 rateUpload);
-                else
+                } else {
                     this._infos.seeds = this.getStateString(TransmissionStatus.DOWNLOAD_WAIT);
+                }
 
                 // Format ETA string
-                if (eta < 0 || eta >= (999*60*60))
+                if (eta < 0 || eta >= (999*60*60)) {
                     eta = _('remaining time unknown');
-                else
+                } else {
                     eta = _('%s remaining').format(timeInterval(eta));
+                }
 
                 this._infos.size = _("%s of %s (%s) - %s").format(currentSize,
                                                              sizeWhenDone,
@@ -962,14 +993,15 @@ const TransmissionTorrent = new Lang.Class({
                 break;
             case TransmissionStatus.SEED_WAIT:
             case TransmissionStatus.SEED:
-                if (this._params.status == TransmissionStatus.SEED)
+                if (this._params.status == TransmissionStatus.SEED) {
                     this._infos.seeds = _("Seeding to %s of %s peers - %s %s/s").format(
                                                 this._params.peersGettingFromUs,
                                                 this._params.peersConnected,
                                                 upArrow,
                                                 rateUpload);
-                else
+                } else {
                     this._infos.seeds = this.getStateString(TransmissionStatus.SEED_WAIT);
+                }
 
                 this._infos.size = _("%s, uploaded %s (Ratio %s)").format(
                                             sizeWhenDone,
@@ -991,9 +1023,9 @@ const TransmissionTorrent = new Lang.Class({
                     break;
             }
             this._error = true;
-        }
-        else
+        } else {
             this._error = false;
+        }
 
     },
 
@@ -1062,12 +1094,15 @@ const TransmissionTorrent = new Lang.Class({
         // Uploaded
         if (show_upload) {
             let ratio = this._params.uploadRatio;
-            if (this._params.seedRatioMode == 1)
+            if (this._params.seedRatioMode == 1) {
                 ratio = ratio / this._params.seedRatioLimit;
-            if (this._params.seedRatioMode === 0 && transmissionDaemonMonitor._session['seedRatioLimited'])
-                ratio = ratio / transmissionDaemonMonitor._session['seedRatioLimit'];
-            if (ratio > 1)
+            }
+            if (this._params.seedRatioMode === 0 && transmissionDaemonMonitor._session.seedRatioLimited) {
+                ratio = ratio / transmissionDaemonMonitor._session.seedRatioLimit;
+            }
+            if (ratio > 1) {
                 ratio = 1;
+            }
             let widthUploaded = Math.round(width * ratio);
             color = uploadedColor;
             border_color = seedBorderColor;
@@ -1088,9 +1123,9 @@ const TransmissionTorrent = new Lang.Class({
         if (this._error) {
             this._error_info.label.text = this._infos.error;
             this._error_info.actor.show();
-        }
-        else
+        } else {
             this._error_info.actor.hide();
+        }
         this._size_info.label.text = this._infos.size;
         this._progress_bar.queue_repaint();
         this._name.update(this._params);
@@ -1219,38 +1254,44 @@ const TorrentsControls = new Lang.Class({
     },
 
     setInfo: function(text) {
-        if (!this.hover)
+        if (!this.hover) {
             this.ctrl_info.text = text;
+        }
     },
 
     addControl: function(button, position) {
         if (!this.ctrl_btns.contains(button.actor)) {
-            if (position)
+            if (position) {
                 this.ctrl_btns.insert_child_at_index(button.actor, position);
-            else
+            } else {
                 this.ctrl_btns.add_actor(button.actor);
+            }
             this.actor.show();
             button.actor.connect('notify::hover', Lang.bind(this, function(button) {
                 this.hover = button.hover;
                 if (this.hover) {
-                    if (button._delegate._info != this.ctrl_info.text)
+                    if (button._delegate._info != this.ctrl_info.text) {
                         this._old_info = this.ctrl_info.text;
+                    }
                     this.ctrl_info.text = button._delegate._info;
-                }
-                else
+                } else {
                     this.ctrl_info.text = this._old_info;
+                }
             }));
         }
     },
 
     removeControl: function(button, name) {
         let button_actor = button;
-        if (button instanceof ControlButton)
+        if (button instanceof ControlButton) {
             button_actor = button.actor;
-        if (this.ctrl_btns.contains(button_actor))
+        }
+        if (this.ctrl_btns.contains(button_actor)) {
             this.ctrl_btns.remove_actor(button_actor);
-        if (this.ctrl_btns.get_children().length === 0)
-          this.actor.hide();
+        }
+        if (this.ctrl_btns.get_children().length === 0) {
+            this.actor.hide();
+        }
     },
 
     removeControls: function() {
@@ -1288,9 +1329,9 @@ const TorrentsTopControls = new Lang.Class({
 
     toggleAddEntry: function(button) {
         this.add_box_btn = button;
-        if (this.add_box.visible)
+        if (this.add_box.visible) {
             this.hideAddEntry();
-        else {
+        } else {
             this.add_box.show();
             let [min_width, pref_width] = this.add_entry.get_preferred_width(-1);
             this.add_entry.width = pref_width;
@@ -1303,8 +1344,9 @@ const TorrentsTopControls = new Lang.Class({
         this.add_entry.text = "";
         this.add_entry.remove_style_pseudo_class('error');
         this.add_entry.remove_style_pseudo_class('inactive');
-        if (this.add_box_btn)
+        if (this.add_box_btn) {
             this.add_box_btn.actor.remove_style_pseudo_class('active');
+        }
         this.add_box.hide();
     },
 
@@ -1320,9 +1362,9 @@ const TorrentsTopControls = new Lang.Class({
     },
 
     torrentAdded: function(added) {
-        if (added)
+        if (added) {
             this.hideAddEntry();
-        else {
+        } else {
             this.add_entry.remove_style_pseudo_class('inactive');
             this.add_entry.add_style_pseudo_class('error');
         }
@@ -1341,24 +1383,26 @@ const TorrentsBottomControls = new Lang.Class({
     },
 
     toggleTurtleMode: function(button, state) {
-        if (state === true || state === false)
+        if (state === true || state === false) {
             this._turtle_state = state;
-        else {
+        } else {
             this._turtle_state = !this._turtle_state;
             transmissionDaemonMonitor.setAltSpeed(this._turtle_state);
         }
 
-        if (this._turtle_state)
+        if (this._turtle_state) {
             button.actor.add_style_pseudo_class('active');
-        else
+        } else {
             button.actor.remove_style_pseudo_class('active');
+        }
     },
 
     toggleDisplayMode: function(button, state) {
-        if (state === true || state === false)
+        if (state === true || state === false) {
             this._display_state = state;
-        else
+        } else {
             this._display_state = !this._display_state;
+        }
 
         if (this._display_state) {
             button.actor.add_style_pseudo_class('active');
@@ -1441,8 +1485,9 @@ const TorrentsFilters = new Lang.Class({
     },
 
     filterByState: function(state_id) {
-        if (!state_id && state_id !== 0)
+        if (!state_id && state_id !== 0) {
             state_id = this.state_id;
+        }
         for (let id in transmissionDaemonIndicator._torrents) {
             let torrent = transmissionDaemonIndicator._torrents[id];
             switch (state_id) {
@@ -1453,36 +1498,41 @@ const TorrentsFilters = new Lang.Class({
                     if (torrent._params.peersGettingFromUs > 0 ||
                         torrent._params.peersSendingToUs > 0 ||
                         torrent._params.webseedsSendingToUs > 0 ||
-                        torrent._params.status == TransmissionStatus.CHECK)
-                            torrent.show();
-                    else
+                        torrent._params.status == TransmissionStatus.CHECK) {
+                        torrent.show();
+                    } else {
                         torrent.hide();
+                    }
                     break;
                 case StatusFilter.DOWNLOADING:
-                    if (torrent._params.status == TransmissionStatus.DOWNLOAD)
+                    if (torrent._params.status == TransmissionStatus.DOWNLOAD) {
                         torrent.show();
-                    else
+                    } else {
                         torrent.hide();
+                    }
                     break;
                 case StatusFilter.SEEDING:
-                    if (torrent._params.status == TransmissionStatus.SEED)
+                    if (torrent._params.status == TransmissionStatus.SEED) {
                         torrent.show();
-                    else
+                    } else {
                         torrent.hide();
+                    }
                     break;
                 case StatusFilter.PAUSED:
                     if (torrent._params.status == TransmissionStatus.STOPPED &&
-                        !torrent._params.isFinished)
+                        !torrent._params.isFinished) {
                         torrent.show();
-                    else
+                    } else {
                         torrent.hide();
+                    }
                     break;
                 case StatusFilter.FINISHED:
                     if (torrent._params.status == TransmissionStatus.STOPPED &&
-                        torrent._params.isFinished)
+                        torrent._params.isFinished) {
                         torrent.show();
-                    else
+                    } else {
                         torrent.hide();
+                    }
                     break;
             }
         }
@@ -1538,11 +1588,12 @@ const TorrentsMenu = new Lang.Class({
             this._scrollBox.add(menuItem.actor);
             menuItem._closingId = this.connect('open-state-changed',
                 function(self, open) {
-                    if (!open)
+                    if (!open) {
                         menuItem.close(false);
+                    }
                 });
             menuItem.connect('destroy', Lang.bind(this, function() {
-                this.length--;
+                this.length -= 1;
             }));
         }
         else {
@@ -1578,17 +1629,19 @@ function disable() {
 }
 
 function readableSize(size) {
-    if (!size)
+    if (!size) {
         size = 0;
+    }
     let units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'];
     let i = 0;
     while (size >= 1000) {
         size /= 1000;
-        ++i;
+        i += 1;
     }
     let n = i;
-    if (n > 0 && size > 0)
-        n--;
+    if (n > 0 && size > 0) {
+        n -= 1;
+    }
 
     return "%s %s".format(size.toFixed(n), units[i]);
 }
@@ -1604,18 +1657,21 @@ function timeInterval(secs) {
         s = seconds + ' ' + (seconds > 1 ? _('seconds') : _('second'));
 
     if (days) {
-        if (days >= 4 || !hours)
+        if (days >= 4 || !hours) {
             return d;
+        }
         return d + ', ' + h;
     }
     if (hours) {
-        if (hours >= 4 || !minutes)
+        if (hours >= 4 || !minutes) {
             return h;
+        }
         return h + ', ' + m;
     }
     if (minutes) {
-        if (minutes >= 4 || !seconds)
+        if (minutes >= 4 || !seconds) {
             return m;
+        }
         return m + ', ' + s;
     }
     return s;
