@@ -27,10 +27,8 @@
     "singleGroups": false,
 
     "strict": false,
-
-    "trailingcomma": false,
-
-    "undef": false,
+    "trailingcomma": true,
+    "undef": true,
     "unused": false,
     "varstmt": true
 }

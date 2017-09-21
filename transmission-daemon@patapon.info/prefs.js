@@ -28,23 +28,61 @@ function init() {
     Lib.initTranslations(Me);
     gsettings = Lib.getSettings(Me);
     settings = {
-        host: {label: _("Hostname"), help: _('Hostname or IP where Transmission is running'), type: 's'},
-        port: {label: _("Port"), help: _('Default is 9091'), type: 'i'},
-        ssl: {label: _("Use SSL ?"), type: 'b'},
-        user: {label: _("Username"), help: _('Username to authenticate to Transmission (optional)'), type: 's'},
-        password: {label: _("Password"), help: _('Password to authenticate to Transmission (optional)'), type: 's', mode: 'passwd'},
-        always_show: {label: _('Always show the indicator'), help: _('Show the indicator even if Transmission is not running'), type: 'b'},
-        stats_torrents: {label: _('Show the number of torrents in the status bar'), type: 'b'},
-        stats_icons: {label: _('Show upload and download icons in the status bar'), type: 'b'},
-        stats_numeric: {label: _('Show upload and download speed in the status bar'), type: 'b'}
+        host: {
+            label: _("Hostname"),
+            help: _('Hostname or IP where Transmission is running'),
+            type: 's',
+        },
+        port: {
+            label: _("Port"),
+            help: _('Default is 9091'),
+            type: 'i',
+        },
+        ssl: {
+            label: _("Use SSL ?"),
+            type: 'b',
+        },
+        user: {
+            label: _("Username"),
+            help: _('Username to authenticate to Transmission (optional)'),
+            type: 's',
+        },
+        password: {
+            label: _("Password"),
+            help: _('Password to authenticate to Transmission (optional)'),
+            type: 's',
+            mode: 'passwd',
+        },
+        always_show: {
+            label: _('Always show the indicator'),
+            help: _('Show the indicator even if Transmission is not running'),
+            type: 'b',
+        },
+        stats_torrents: {
+            label: _('Show the number of torrents in the status bar'),
+            type: 'b',
+        },
+        stats_icons: {
+            label: _('Show upload and download icons in the status bar'),
+            type: 'b',
+        },
+        stats_numeric: {
+            label: _('Show upload and download speed in the status bar'),
+            type: 'b',
+        },
     };
 }
 
 function buildPrefsWidget() {
-    let frame = new Gtk.Box({orientation: Gtk.Orientation.VERTICAL,
-                             border_width: 10 });
-    let vbox = new Gtk.Box({orientation: Gtk.Orientation.VERTICAL,
-                            margin: 20, margin_top: 10 });
+    let frame = new Gtk.Box({
+        orientation: Gtk.Orientation.VERTICAL,
+        border_width: 10,
+    });
+    let vbox = new Gtk.Box({
+        orientation: Gtk.Orientation.VERTICAL,
+        margin: 20,
+        margin_top: 10,
+    });
     let hbox;
 
     for (let setting in settings) {
@@ -66,14 +104,19 @@ function buildPrefsWidget() {
 }
 
 function createStringSetting(setting) {
+    let hbox = new Gtk.Box({
+        orientation: Gtk.Orientation.HORIZONTAL,
+        margin_top: 5,
+    });
 
-    let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL,
-                            margin_top: 5});
+    let setting_label = new Gtk.Label({
+        label: settings[setting].label,
+        xalign: 0,
+    });
 
-    let setting_label = new Gtk.Label({label: settings[setting].label,
-                                       xalign: 0 });
-
-    let setting_string = new Gtk.Entry({text: gsettings.get_string(setting.replace('_', '-'))});
+    let setting_string = new Gtk.Entry({
+        text: gsettings.get_string(setting.replace('_', '-')),
+    });
     setting_string.connect('notify::text', function(entry) {
         gsettings.set_string(setting.replace('_', '-'), entry.text);
     });
@@ -95,15 +138,25 @@ function createStringSetting(setting) {
 
 function createIntSetting(setting) {
 
-    let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL,
-                            margin_top: 5});
+    let hbox = new Gtk.Box({
+        orientation: Gtk.Orientation.HORIZONTAL,
+        margin_top: 5,
+    });
 
-    let setting_label = new Gtk.Label({label: settings[setting].label,
-                                       xalign: 0 });
+    let setting_label = new Gtk.Label({
+        label: settings[setting].label,
+        xalign: 0,
+    });
 
-    let adjustment = new Gtk.Adjustment({ lower: 1, upper: 65535, step_increment: 1});
-    let setting_int = new Gtk.SpinButton({adjustment: adjustment,
-                                          snap_to_ticks: true});
+    let adjustment = new Gtk.Adjustment({
+        lower: 1,
+        upper: 65535,
+        step_increment: 1,
+    });
+    let setting_int = new Gtk.SpinButton({
+        adjustment: adjustment,
+        snap_to_ticks: true,
+    });
     setting_int.set_value(gsettings.get_int(setting.replace('_', '-')));
     setting_int.connect('value-changed', function(entry) {
         gsettings.set_int(setting.replace('_', '-'), entry.value);
@@ -121,14 +174,19 @@ function createIntSetting(setting) {
 }
 
 function createBoolSetting(setting) {
+    let hbox = new Gtk.Box({
+        orientation: Gtk.Orientation.HORIZONTAL,
+        margin_top: 5,
+    });
 
-    let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL,
-                            margin_top: 5});
+    let setting_label = new Gtk.Label({
+        label: settings[setting].label,
+        xalign: 0,
+    });
 
-    let setting_label = new Gtk.Label({label: settings[setting].label,
-                                       xalign: 0 });
-
-    let setting_switch = new Gtk.Switch({active: gsettings.get_boolean(setting.replace('_', '-'))});
+    let setting_switch = new Gtk.Switch({
+        active: gsettings.get_boolean(setting.replace('_', '-')),
+    });
     setting_switch.connect('notify::active', function(button) {
         gsettings.set_boolean(setting.replace('_', '-'), button.active);
     });

@@ -55,21 +55,21 @@ let TransmissionStatus = {
     DOWNLOAD_WAIT: 3,
     DOWNLOAD: 4,
     SEED_WAIT: 5,
-    SEED: 6
+    SEED: 6,
 };
 
 const TransmissionError = {
     NONE: 0,
     TRACKER_WARNING: 1,
     TRACKER_ERROR: 2,
-    LOCAL_ERROR: 3
+    LOCAL_ERROR: 3,
 };
 
 const ErrorType = {
     NO_ERROR: 0,
     CONNECTION_ERROR: 1,
     AUTHENTICATION_ERROR: 2,
-    CONNECTING: 3
+    CONNECTING: 3,
 };
 
 const StatusFilter = {
@@ -78,7 +78,7 @@ const StatusFilter = {
     DOWNLOADING: 2,
     SEEDING: 3,
     PAUSED: 4,
-    FINISHED: 5
+    FINISHED: 5,
 };
 
 const StatusFilterLabels = {
@@ -87,7 +87,7 @@ const StatusFilterLabels = {
     2: _('Downloading'),
     3: _('Seeding'),
     4: _('Paused'),
-    5: _('Stopped')
+    5: _('Stopped'),
 };
 
 const TDAEMON_SETTINGS_SCHEMA = 'org.gnome.shell.extensions.transmission-daemon';
@@ -106,7 +106,7 @@ const TDAEMON_TORRENTS_DISPLAY = 'torrents-display';
 
 const TorrentDisplayClass = {
     TransmissionTorrent: 0,
-    TransmissionTorrentSmall: 1
+    TransmissionTorrentSmall: 1,
 };
 
 let gsettings;
@@ -180,7 +180,7 @@ const TransmissionDaemonMonitor = new Lang.Class({
                             JSON.stringify(data).length);
         if (this._session_id) {
             message.request_headers.append("X-Transmission-Session-Id",
-                                                 this._session_id);
+                                           this._session_id);
         }
         _httpSession.queue_message(message, Lang.bind(this, callback));
     },
@@ -195,14 +195,15 @@ const TransmissionDaemonMonitor = new Lang.Class({
         let params = {
             method: "torrent-get",
             arguments: {
-                fields: ["error", "errorString", "id", "isFinished",
-                         "leftUntilDone", "name", "peersGettingFromUs",
-                         "peersSendingToUs", "rateDownload", "rateUpload",
-                         "percentDone", "isFinished", "peersConnected",
-                         "uploadedEver", "sizeWhenDone", "status",
-                         "webseedsSendingToUs", "uploadRatio", "eta",
-                         "seedRatioLimit", "seedRatioMode"]
-            }
+                fields: [
+                    "error", "errorString", "id", "isFinished", "leftUntilDone",
+                    "name", "peersGettingFromUs", "peersSendingToUs",
+                    "rateDownload", "rateUpload", "percentDone", "isFinished",
+                    "peersConnected", "uploadedEver", "sizeWhenDone", "status",
+                    "webseedsSendingToUs", "uploadRatio", "eta",
+                    "seedRatioLimit", "seedRatioMode",
+                ],
+            },
         };
         if (this._torrents !== false) {
             params.arguments.ids = "recently-active";
@@ -215,7 +216,7 @@ const TransmissionDaemonMonitor = new Lang.Class({
 
     retrieveStats: function() {
         let params = {
-            method: "session-stats"
+            method: "session-stats",
         };
         this.sendPost(params, this.processStats);
         if (this._timers.stats) {
@@ -225,7 +226,7 @@ const TransmissionDaemonMonitor = new Lang.Class({
 
     retrieveSession: function() {
         let params = {
-            method: "session-get"
+            method: "session-get",
         };
         this.sendPost(params, this.processSession);
         if (this._timers.session) {
@@ -239,7 +240,9 @@ const TransmissionDaemonMonitor = new Lang.Class({
         };
         if (torrent_id) {
             params.arguments = {
-                ids: [torrent_id]
+                ids: [
+                    torrent_id,
+                ],
             };
         }
         this.sendPost(params, this.onTorrentAction);
@@ -249,8 +252,8 @@ const TransmissionDaemonMonitor = new Lang.Class({
         let params = {
             method: "torrent-add",
             arguments: {
-                filename: url
-            }
+                filename: url,
+            },
         };
         this.sendPost(params, this.onTorrentAdd);
     },
@@ -259,8 +262,8 @@ const TransmissionDaemonMonitor = new Lang.Class({
         let params = {
             method: "session-set",
             arguments: {
-                'alt-speed-enabled': enable
-            }
+                'alt-speed-enabled': enable,
+            },
         };
         this.sendPost(params, this.onSessionAction);
     },
@@ -336,7 +339,7 @@ const TransmissionDaemonMonitor = new Lang.Class({
                     CHECK: 2,
                     DOWNLOAD: 4,
                     SEED: 8,
-                    STOPPED: 16
+                    STOPPED: 16,
                 };
             }
 
@@ -389,8 +392,7 @@ const TransmissionDaemonMonitor = new Lang.Class({
     destroy: function() {
         for (let source in this._timers)
             Mainloop.source_remove(this._timers[source]);
-    }
-
+    },
 });
 
 const TransmissionDaemonIndicator = new Lang.Class({
@@ -434,12 +436,16 @@ const TransmissionDaemonIndicator = new Lang.Class({
 
         this._indicatorBox = new St.BoxLayout();
 
-        this._icon = new St.Icon({icon_name: connectIcon,
-                                  style_class: 'system-status-icon'});
+        this._icon = new St.Icon({
+            icon_name: connectIcon,
+            style_class: 'system-status-icon',
+        });
 
-        this._status = new St.Label({text: ''});
-        this._statusBin = new St.Bin({child: this._status,
-                                      y_align: St.Align.MIDDLE});
+        this._status = new St.Label({ text: '', });
+        this._statusBin = new St.Bin({
+            child: this._status,
+            y_align: St.Align.MIDDLE,
+        });
 
         this._indicatorBox.add(this._icon);
         this._indicatorBox.add(this._statusBin);
@@ -784,7 +790,7 @@ const TransmissionDaemonIndicator = new Lang.Class({
 
     toString: function() {
         return "[object TransmissionDaemonIndicator]";
-    }
+    },
 
 });
 
@@ -793,22 +799,27 @@ const TransmissionTorrentSmall = new Lang.Class({
     Extends: PopupMenu.PopupBaseMenuItem,
 
     _init: function(params) {
-        this.parent({reactive: false,
-                     style_class: 'torrent-small'});
+        this.parent({
+            reactive: false,
+            style_class: 'torrent-small',
+        });
 
         this._params = params;
         this._info = "";
 
-        this.box = new St.BoxLayout({vertical: false, style_class: 'torrent-small-infos'});
+        this.box = new St.BoxLayout({
+            vertical: false,
+            style_class: 'torrent-small-infos',
+        });
 
-        let name_label = new St.Label({text: this._params.name});
+        let name_label = new St.Label({ text: this._params.name, });
         name_label.set_style('max-width: 300px');
 
-        this.infos = new St.Label({text: ''});
+        this.infos = new St.Label({ text: '', });
         this.box.add(this.infos);
 
         this.actor.add(name_label);
-        this.actor.add(this.box, {span: -1, align: St.Align.END});
+        this.actor.add(this.box, { span: -1, align: St.Align.END, });
 
         this.buildInfo();
     },
@@ -854,7 +865,7 @@ const TransmissionTorrentSmall = new Lang.Class({
 
     show: function() {
         this.actor.show();
-    }
+    },
 });
 
 const TransmissionTorrent = new Lang.Class({
@@ -874,30 +885,38 @@ const TransmissionTorrent = new Lang.Class({
         this._name.actor.remove_style_class_name('popup-inactive-menu-item');
         this.addMenuItem(this._name);
 
-        this._seeds_info = new PopupMenu.PopupMenuItem(this._infos.seeds,
-                                                       {reactive: false,
-                                                        style_class: 'torrent-infos seeds-info'});
+        this._seeds_info = new PopupMenu.PopupMenuItem(
+            this._infos.seeds, {
+                reactive: false,
+                style_class: 'torrent-infos seeds-info',
+            });
         this._seeds_info.actor.remove_style_class_name('popup-menu-item');
         this._seeds_info.actor.remove_style_class_name('popup-inactive-menu-item');
         this.addMenuItem(this._seeds_info);
 
-        this._progress_bar = new St.DrawingArea({style_class: 'progress-bar',
-                                                 reactive: false});
+        this._progress_bar = new St.DrawingArea({
+            style_class: 'progress-bar',
+            reactive: false,
+        });
         this._progress_bar.height = 10;
         this._progress_bar.connect('repaint', Lang.bind(this, this._draw));
         this.actor.add(this._progress_bar);
 
-        this._error_info = new PopupMenu.PopupMenuItem(this._infos.error,
-                                                       {reactive: false,
-                                                        style_class: 'torrent-infos error'});
+        this._error_info = new PopupMenu.PopupMenuItem(
+            this._infos.error, {
+                reactive: false,
+                style_class: 'torrent-infos error',
+            });
         this._error_info.actor.remove_style_class_name('popup-menu-item');
         this._error_info.actor.remove_style_class_name('popup-inactive-menu-item');
         this.addMenuItem(this._error_info);
         this._error_info.actor.hide();
 
-        this._size_info = new PopupMenu.PopupMenuItem(this._infos.size,
-                                                      {reactive: false,
-                                                       style_class: 'torrent-infos size-info'});
+        this._size_info = new PopupMenu.PopupMenuItem(
+            this._infos.size, {
+                reactive: false,
+                style_class: 'torrent-infos size-info',
+            });
         this._size_info.actor.remove_style_class_name('popup-menu-item');
         this._size_info.actor.remove_style_class_name('popup-inactive-menu-item');
         this.addMenuItem(this._size_info);
@@ -1146,30 +1165,36 @@ const TransmissionTorrent = new Lang.Class({
         this._error_info.destroy();
         this._size_info.destroy();
         this.parent();
-    }
+    },
 });
 
-const TorrentDisplayClasses = [TransmissionTorrent, TransmissionTorrentSmall];
+const TorrentDisplayClasses = [TransmissionTorrent, TransmissionTorrentSmall, ];
 
 const TorrentName = new Lang.Class({
     Name: 'TorrentName',
     Extends: PopupMenu.PopupBaseMenuItem,
 
     _init: function (params) {
-        this.parent({reactive: false,
-                     style_class: 'torrent-name'});
+        this.parent({
+            reactive: false,
+            style_class: 'torrent-name',
+        });
 
         this.id = params.id;
         this.status = params.status;
 
-        this.box = new St.BoxLayout({vertical: false,
-                                     style_class: 'torrent-controls'});
+        this.box = new St.BoxLayout({
+            vertical: false,
+            style_class: 'torrent-controls',
+        });
 
-        let name_label = new St.Label({text: params.name,
-                                       style_class: 'torrent-name-text'});
+        let name_label = new St.Label({
+            text: params.name,
+            style_class: 'torrent-name-text',
+        });
 
         this.actor.add(name_label);
-        this.actor.add(this.box, {expand: true, x_fill: false, x_align: St.Align.END});
+        this.actor.add(this.box, { expand: true, x_fill: false, x_align: St.Align.END, });
 
         this.updateButtons();
     },
@@ -1222,31 +1247,39 @@ const TorrentsControls = new Lang.Class({
     Extends: PopupMenu.PopupBaseMenuItem,
 
     _init: function () {
-        this.parent({reactive: false, style_class: 'torrents-controls'});
+        this.parent({ reactive: false, style_class: 'torrents-controls', });
         this.actor.hide();
 
         this._old_info = "";
         this.hover = false;
 
-        this.vbox = new St.BoxLayout({vertical: true,
-                                      style_class: 'torrents-controls-vbox'});
+        this.vbox = new St.BoxLayout({
+            vertical: true,
+            style_class: 'torrents-controls-vbox',
+        });
 
-        this.ctrl_box = new St.BoxLayout({vertical: false});
+        this.ctrl_box = new St.BoxLayout({ vertical: false, });
 
-        this.ctrl_btns = new St.BoxLayout({vertical: false,
-                                           style_class: 'torrents-controls-btn'});
-        this.ctrl_info = new St.Label({style_class: 'torrents-controls-text',
-                                       text: ''});
+        this.ctrl_btns = new St.BoxLayout({
+            vertical: false,
+            style_class: 'torrents-controls-btn',
+        });
+        this.ctrl_info = new St.Label({
+            style_class: 'torrents-controls-text',
+            text: '',
+        });
 
         this.ctrl_box.add(this.ctrl_btns);
-        this.ctrl_box.add(this.ctrl_info, {expand: true,
-                                           x_fill: false,
-                                           y_fill: false,
-                                           x_align: St.Align.END});
+        this.ctrl_box.add(this.ctrl_info, {
+            expand: true,
+            x_fill: false,
+            y_fill: false,
+            x_align: St.Align.END,
+        });
 
-        this.vbox.add(this.ctrl_box, {expand: true, span: -1});
+        this.vbox.add(this.ctrl_box, { expand: true, span: -1, });
 
-        this.actor.add(this.vbox, {expand: true, span: -1});
+        this.actor.add(this.vbox, { expand: true, span: -1, });
     },
 
     setInfo: function(text) {
@@ -1295,7 +1328,7 @@ const TorrentsControls = new Lang.Class({
             this.removeControl(b);
         }));
         this.actor.hide();
-    }
+    },
 });
 
 const TorrentsTopControls = new Lang.Class({
@@ -1303,24 +1336,28 @@ const TorrentsTopControls = new Lang.Class({
     Extends: TorrentsControls,
 
     _init: function () {
-        this.parent({reactive: false});
+        this.parent({ reactive: false, });
 
-        this.add_box = new St.BoxLayout({vertical: false,
-                                         style_class: 'torrents-add'});
+        this.add_box = new St.BoxLayout({
+            vertical: false,
+            style_class: 'torrents-add',
+        });
         this.add_box_btn = false;
-        this.add_entry = new St.Entry({style_class: 'add-entry',
-                                       hint_text: _("Torrent URL or Magnet link"),
-                                       can_focus: true});
+        this.add_entry = new St.Entry({
+            style_class: 'add-entry',
+            hint_text: _("Torrent URL or Magnet link"),
+            can_focus: true,
+        });
         this.add_btn = new ControlButton("object-select", "",
                                          Lang.bind(this, this.torrentAdd));
         this.add_box.hide();
 
-        this.add_box.add(this.add_entry, {expand: true});
+        this.add_box.add(this.add_entry, { expand: true, });
         this.add_box.add(this.add_btn.actor);
 
         this.ctrl_info.text = _("Connecting...");
 
-        this.vbox.add(this.add_box, {expand: true, span: -1});
+        this.vbox.add(this.add_box, { expand: true, span: -1, });
     },
 
     toggleAddEntry: function(button) {
@@ -1372,7 +1409,7 @@ const TorrentsBottomControls = new Lang.Class({
     Extends: TorrentsControls,
 
     _init: function () {
-        this.parent({reactive: false});
+        this.parent({ reactive: false, });
 
         this._turtle_state = false;
         this._display_state = false;
@@ -1433,8 +1470,10 @@ const ControlButton = new Lang.Class({
             icon_size: icon_size,
         });
 
-        this.actor = new St.Button({style_class: 'modal-dialog-button button',
-                                    child: this.icon});
+        this.actor = new St.Button({
+            style_class: 'modal-dialog-button button',
+            child: this.icon,
+        });
         this.actor._delegate = this;
         this.actor.connect('clicked', callback);
 
@@ -1447,7 +1486,7 @@ const ControlButton = new Lang.Class({
 
     setIcon: function(icon) {
         this.icon.icon_name = icon + "-symbolic";
-    }
+    },
 });
 
 const TorrentsFilter = new Lang.Class({
@@ -1462,7 +1501,7 @@ const TorrentsFilter = new Lang.Class({
     activate: function() {
       this._delegate.filterByState(this.state_id);
       this._delegate.menu.close();
-    }
+    },
 });
 
 const TorrentsFilters = new Lang.Class({
@@ -1543,7 +1582,7 @@ const TorrentsFilters = new Lang.Class({
 
     show: function() {
         this.actor.show();
-    }
+    },
 });
 
 const TorrentsMenu = new Lang.Class({
@@ -1559,10 +1598,12 @@ const TorrentsMenu = new Lang.Class({
         this.bottom_controls = new TorrentsBottomControls();
         this.bottom_controls._delegate = this;
 
-        this._scroll = new St.ScrollView({style_class: 'vfade popup-sub-menu torrents-list',
-                                          hscrollbar_policy: Gtk.PolicyType.NEVER,
-                                          vscrollbar_policy: Gtk.PolicyType.AUTOMATIC});
-        this._scrollBox = new St.BoxLayout({vertical: true});
+        this._scroll = new St.ScrollView({
+            style_class: 'vfade popup-sub-menu torrents-list',
+            hscrollbar_policy: Gtk.PolicyType.NEVER,
+            vscrollbar_policy: Gtk.PolicyType.AUTOMATIC,
+        });
+        this._scrollBox = new St.BoxLayout({ vertical: true, });
         this._scroll.add_actor(this._scrollBox);
 
         this.addMenuItem(this.controls);
@@ -1600,7 +1641,7 @@ const TorrentsMenu = new Lang.Class({
     close: function(animate) {
         this.parent(animate);
         this.controls.hideAddEntry();
-    }
+    },
 });
 
 
@@ -1628,7 +1669,7 @@ function readableSize(size) {
     if (!size) {
         size = 0;
     }
-    let units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB'];
+    let units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', ];
     let i = 0;
     while (size >= 1000) {
         size /= 1000;
