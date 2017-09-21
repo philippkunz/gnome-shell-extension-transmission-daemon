@@ -8,10 +8,12 @@ all: build
 clean:
 	rm -f build.zip
 
-build: clean
+build: build.zip
+build.zip: transmission-daemon@patapon.info
 	cd ${NAME} && zip -qr ../build.zip *
 
-install:
+install: ${EXTDIR}/${NAME}
+${EXTDIR}/${NAME}: ${NAME}
 	cp -r ${NAME} ${EXTDIR}/${NAME}
 	gnome-shell-extension-tool -e ${NAME}
 
