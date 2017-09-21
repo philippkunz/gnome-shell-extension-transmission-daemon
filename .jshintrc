@@ -1,11 +1,8 @@
 {
     "esversion": 6,
     "bitwise": true,
-
-    "curly": false,
-
+    "curly": true,
     "eqeqeq": false,
-
     "forin": false,
     "freeze": true,
     "futurehostile": true,

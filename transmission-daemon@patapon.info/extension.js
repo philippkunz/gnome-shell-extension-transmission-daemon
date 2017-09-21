@@ -167,8 +167,9 @@ const TransmissionDaemonMonitor = new Lang.Class({
 
     changeInterval: function(interval) {
         this._interval = interval;
-        for (let source in this._timers)
+        for (let source in this._timers) {
             Mainloop.source_remove(this._timers[source]);
+        }
         this.retrieveInfos();
     },
 
@@ -390,8 +391,9 @@ const TransmissionDaemonMonitor = new Lang.Class({
     },
 
     destroy: function() {
-        for (let source in this._timers)
+        for (let source in this._timers) {
             Mainloop.source_remove(this._timers[source]);
+        }
     },
 });
 
@@ -740,13 +742,15 @@ const TransmissionDaemonIndicator = new Lang.Class({
     },
 
     cleanTorrents: function(to_remove) {
-        for (let id in to_remove)
+        for (let id in to_remove) {
             this.removeTorrent(to_remove[id]);
+        }
     },
 
     removeTorrents: function() {
-        for (let id in this._torrents)
+        for (let id in this._torrents) {
             this.removeTorrent(id);
+        }
     },
 
     removeTorrent: function(id) {
@@ -758,8 +762,9 @@ const TransmissionDaemonIndicator = new Lang.Class({
 
     updateTorrents: function() {
         let torrents = this._monitor.getList();
-        for (let i in torrents)
+        for (let i in torrents) {
             this.updateTorrent(torrents[i]);
+        }
     },
 
     updateTorrent: function(torrent) {
