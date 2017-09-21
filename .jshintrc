@@ -23,10 +23,7 @@
     "nonew": true,
 
     "shadow": false,
-
-    "singleGroups": false,
-
-    "strict": false,
+    "singleGroups": true,
     "trailingcomma": true,
     "undef": true,
     "unused": false,

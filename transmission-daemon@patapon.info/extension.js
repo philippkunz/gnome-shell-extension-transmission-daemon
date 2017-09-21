@@ -995,7 +995,7 @@ const TransmissionTorrent = new Lang.Class({
                 }
 
                 // Format ETA string
-                if (eta < 0 || eta >= (999*60*60)) {
+                if (eta < 0 || eta >= 999 * 60 * 60) {
                     eta = _('remaining time unknown');
                 } else {
                     eta = _('%s remaining').format(timeInterval(eta));
@@ -1684,10 +1684,10 @@ function readableSize(size) {
 }
 
 function timeInterval(secs) {
-    const days    = Math.floor (secs / 86400),
-          hours   = Math.floor ((secs % 86400) / 3600),
-          minutes = Math.floor ((secs % 3600) / 60),
-          seconds = Math.floor (secs % 60),
+    const days    = Math.floor(secs / 86400),
+          hours   = Math.floor(secs % 86400 / 3600),
+          minutes = Math.floor(secs % 3600 / 60),
+          seconds = Math.floor(secs % 60),
           d = days    + ' ' + (days    > 1 ? _('days')    : _('day')),
           h = hours   + ' ' + (hours   > 1 ? _('hours')   : _('hour')),
           m = minutes + ' ' + (minutes > 1 ? _('minutes') : _('minute')),
