@@ -283,106 +283,99 @@ const TransmissionDaemonMonitor = new Lang.Class({
     },
 
     processList: function(session, message) {
-        if (message.status_code == "200") {
-            //log(message.response_body.data);
-            let response = JSON.parse(message.response_body.data);
-            this._torrents = response.arguments.torrents;
-            let to_remove = response.arguments.removed;
-            transmissionDaemonIndicator.updateList(to_remove);
-            if (!this._timers.list) {
-                this._timers.list = Mainloop.timeout_add_seconds(
-                                        this._interval,
-                                        Lang.bind(this, this.retrieveList));
-            }
+        if (message.status_code !== 200) {
+            log(`invalid response to processList: ${message}`);
+            return;
+        }
+
+        let response = JSON.parse(message.response_body.data);
+        this._torrents = response.arguments.torrents;
+        let to_remove = response.arguments.removed;
+
+        transmissionDaemonIndicator.updateList(to_remove);
+        if (!this._timers.list) {
+            this._timers.list = Mainloop.timeout_add_seconds(
+                this._interval, Lang.bind(this, this.retrieveList));
         }
     },
 
     processStats: function(session, message) {
-        if (message.status_code == "409") {
-            this._session_id = message.response_headers.get_one('X-Transmission-Session-Id');
-            this.retrieveInfos();
-        }
-        else {
-            //log(message.status_code);
-            //log(message.response_body.data);
-            if (message.status_code == "200") {
+        switch (message.status_code) {
+            case 200:
                 let response = JSON.parse(message.response_body.data);
                 this._stats = response.arguments;
                 transmissionDaemonIndicator.updateStats();
-            }
-            else {
-                let error;
-                switch(message.status_code) {
-                    case 404:
-                        error = _("Can't access to %s").format(this._url);
-                        break;
-                    case 401:
-                        // See this.authenticate
-                        break;
-                    default:
-                        error = _("Can't connect to Transmission");
-                        break;
-                }
-                if (error) {
-                    transmissionDaemonIndicator.connectionError(ErrorType.CONNECTION_ERROR,
-                                                                error);
-                }
-                // clean torrent list on connection error
+                break;
+            case 401:
+                // see this.authenticate
                 this.torrents = false;
-            }
-            if (!this._timers.stats) {
-                this._timers.stats = Mainloop.timeout_add_seconds(
-                                        this._interval,
-                                        Lang.bind(this, this.retrieveStats));
-            }
+                break;
+            case 404:
+                transmissionDaemonIndicator.connectionError(
+                    ErrorType.CONNECTION_ERROR, _("Can't access to %s").format(this._url));
+                this.torrents = false;
+                break;
+            case 409:
+                this._session_id = message.response_headers.get_one('X-Transmission-Session-Id');
+                this.retrieveInfos();
+                return;
+            default:
+                transmissionDaemonIndicator.connectionError(
+                    ErrorType.CONNECTION_ERROR, _("Can't connect to Transmission"));
+                this.torrents = false;
+                break;
+        }
+
+        if (!this._timers.stats) {
+            this._timers.stats = Mainloop.timeout_add_seconds(
+                this._interval, Lang.bind(this, this.retrieveStats));
         }
     },
 
     processSession: function(session, message) {
-        if (message.status_code == "200") {
-            //log(message.response_body.data);
-            let response = JSON.parse(message.response_body.data);
-            this._session = response.arguments;
+        if (message.status_code !== 200) {
+            log(`invalid response to processSession: ${message}`);
+            return;
+        }
 
-            transmissionDaemonIndicator.toggleTurtleMode(this._session['alt-speed-enabled']);
+        let response = JSON.parse(message.response_body.data);
+        this._session = response.arguments;
 
-            // compat with older daemons
-            if (this._session['rpc-version'] < 14) {
-                TransmissionStatus = {
-                    CHECK_WAIT: 1,
-                    CHECK: 2,
-                    DOWNLOAD: 4,
-                    SEED: 8,
-                    STOPPED: 16,
-                };
-            }
+        transmissionDaemonIndicator.toggleTurtleMode(this._session['alt-speed-enabled']);
 
-            if (!this._timers.session) {
-                this._timers.session = Mainloop.timeout_add_seconds(
-                                        this._interval * 1.8,
-                                        Lang.bind(this, this.retrieveSession));
-            }
+        // compat with older daemons
+        if (this._session['rpc-version'] < 14) {
+            TransmissionStatus = {
+                CHECK_WAIT: 1,
+                CHECK: 2,
+                DOWNLOAD: 4,
+                SEED: 8,
+                STOPPED: 16,
+            };
+        }
+
+        if (!this._timers.session) {
+            this._timers.session = Mainloop.timeout_add_seconds(
+                                    this._interval * 1.8,
+                                    Lang.bind(this, this.retrieveSession));
         }
     },
 
     onSessionAction: function(session, message) {
-        if (message.status_code != 200) {
+        if (message.status_code !== 200) {
             log(message.response_body.data);
         }
     },
 
     onTorrentAction: function(session, message) {
-        if (message.status_code != 200) {
+        if (message.status_code !== 200) {
             log(message.response_body.data);
         }
     },
 
     onTorrentAdd: function(session, message) {
         let result = JSON.parse(message.response_body.data);
-        let added = false;
-        if (result.arguments['torrent-added']) {
-            added = true;
-        }
+        let added = !!result.arguments['torrent-added'];
         transmissionDaemonIndicator.torrentAdded(added);
     },
 
@@ -510,10 +503,11 @@ const TransmissionDaemonIndicator = new Lang.Class({
         } else if (this._state == ErrorType.CONNECTION_ERROR) {
             this.hide();
         }
+
         this._host = gsettings.get_string(TDAEMON_HOST_KEY);
         let port = gsettings.get_int(TDAEMON_PORT_KEY);
         let rpc_url = gsettings.get_string(TDAEMON_RPC_URL_KEY);
-        if (port == 443) {
+        if (port === 443) {
             this._url = 'https://%s%sweb/'.format(this._host, rpc_url);
         } else {
             this._url = 'http://%s:%s%sweb/'.format(this._host, port.toString(), rpc_url);
