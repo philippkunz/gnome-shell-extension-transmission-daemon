@@ -31,7 +31,7 @@ function getSettings(extension) {
     } else {
         // extension installed system-wide
         if (Gio.Settings.list_schemas().indexOf(schemaName) === -1) {
-            throw "Schema \"%s\" not found.".format(schemaName);
+            throw 'Schema "%s" not found.'.format(schemaName);
         }
 
         return new Gio.Settings({ schema: schemaName, });
