@@ -32,15 +32,14 @@ let downArrow = "";
 try {
     upArrow = decodeURIComponent(escape('↑')).toString();
     downArrow = decodeURIComponent(escape('↓')).toString();
-}
-catch(e) {
+} catch(e) {
     upArrow = '↑';
     downArrow = '↓';
 }
 
-const enabledIcon = "my-transmission-symbolic";
-const errorIcon = "my-transmission-error-symbolic";
-const connectIcon = "my-transmission-connecting-symbolic";
+const enabledIcon = 'my-transmission-symbolic';
+const errorIcon = 'my-transmission-error-symbolic';
+const connectIcon = 'my-transmission-connecting-symbolic';
 
 const Gettext = imports.gettext.domain('gnome-shell-extension-transmission-daemon');
 const _ = Gettext.gettext;
@@ -124,17 +123,20 @@ const TransmissionDaemonMonitor = new Lang.Class({
     Name: 'TransmissionDaemonMonitor',
 
     _init: function() {
-        this._url = "";
+        this._url = '';
         this._session_id = false;
         this._torrents = false;
         this._stats = false;
         this._session = false;
         this._timers = {};
         this._interval = 10;
-        _httpSession.connect("authenticate", Lang.bind(this, this.authenticate));
+
+        _httpSession.connect('authenticate', Lang.bind(this, this.authenticate));
+
         this.updateURL();
         this.retrieveInfos();
-        gsettings.connect("changed", Lang.bind(this, function() {
+
+        gsettings.connect('changed', Lang.bind(this, function() {
             this.updateURL();
         }));
     },
@@ -143,7 +145,8 @@ const TransmissionDaemonMonitor = new Lang.Class({
         let host = gsettings.get_string(TDAEMON_HOST_KEY);
         let port = gsettings.get_int(TDAEMON_PORT_KEY);
         let rpc_url = gsettings.get_string(TDAEMON_RPC_URL_KEY);
-        let method = gsettings.get_boolean(TDAEMON_SSL_KEY) ? "https" : "http";
+        let method = gsettings.get_boolean(TDAEMON_SSL_KEY) ? 'https' : 'http';
+
         this._url = '%s://%s:%s%srpc'.format(method, host, port.toString(), rpc_url);
     },
 
@@ -152,16 +155,18 @@ const TransmissionDaemonMonitor = new Lang.Class({
         let password = gsettings.get_string(TDAEMON_PASSWORD_KEY);
 
         if (retrying) {
-            transmissionDaemonIndicator.connectionError(ErrorType.AUTHENTICATION_ERROR,
-                                                        _("Authentication failed"));
+            transmissionDaemonIndicator.connectionError(
+                ErrorType.AUTHENTICATION_ERROR,
+                _('Authentication failed'));
             return;
         }
 
         if (user && password) {
             auth.authenticate(user, password);
         } else {
-            transmissionDaemonIndicator.connectionError(ErrorType.AUTHENTICATION_ERROR,
-                                                        _("Missing username or password"));
+            transmissionDaemonIndicator.connectionError(
+                ErrorType.AUTHENTICATION_ERROR,
+                _('Missing username or password'));
         }
     },
 
@@ -170,18 +175,21 @@ const TransmissionDaemonMonitor = new Lang.Class({
         for (let source in this._timers) {
             Mainloop.source_remove(this._timers[source]);
         }
+
         this.retrieveInfos();
     },
 
     sendPost: function(data, callback) {
         let message = Soup.Message.new('POST', this._url);
-        message.set_request("application/x-www-form-urlencoded",
+        message.set_request('application/x-www-form-urlencoded',
                             Soup.MemoryUse.COPY,
                             JSON.stringify(data));
+
         if (this._session_id) {
-            message.request_headers.append("X-Transmission-Session-Id",
+            message.request_headers.append('X-Transmission-Session-Id',
                                            this._session_id);
         }
+
         _httpSession.queue_message(message, Lang.bind(this, callback));
     },
 
@@ -193,21 +201,22 @@ const TransmissionDaemonMonitor = new Lang.Class({
 
     retrieveList: function() {
         let params = {
-            method: "torrent-get",
+            method: 'torrent-get',
             arguments: {
                 fields: [
-                    "error", "errorString", "id", "isFinished", "leftUntilDone",
-                    "name", "peersGettingFromUs", "peersSendingToUs",
-                    "rateDownload", "rateUpload", "percentDone", "isFinished",
-                    "peersConnected", "uploadedEver", "sizeWhenDone", "status",
-                    "webseedsSendingToUs", "uploadRatio", "eta",
-                    "seedRatioLimit", "seedRatioMode",
+                    'error', 'errorString', 'id', 'isFinished', 'leftUntilDone',
+                    'name', 'peersGettingFromUs', 'peersSendingToUs',
+                    'rateDownload', 'rateUpload', 'percentDone', 'isFinished',
+                    'peersConnected', 'uploadedEver', 'sizeWhenDone', 'status',
+                    'webseedsSendingToUs', 'uploadRatio', 'eta',
+                    'seedRatioLimit', 'seedRatioMode',
                 ],
             },
         };
         if (this._torrents !== false) {
-            params.arguments.ids = "recently-active";
+            params.arguments.ids = 'recently-active';
         }
+
         this.sendPost(params, this.processList);
         if (this._timers.list) {
             delete this._timers.list;
@@ -216,8 +225,9 @@ const TransmissionDaemonMonitor = new Lang.Class({
 
     retrieveStats: function() {
         let params = {
-            method: "session-stats",
+            method: 'session-stats',
         };
+
         this.sendPost(params, this.processStats);
         if (this._timers.stats) {
             delete this._timers.stats;
@@ -226,8 +236,9 @@ const TransmissionDaemonMonitor = new Lang.Class({
 
     retrieveSession: function() {
         let params = {
-            method: "session-get",
+            method: 'session-get',
         };
+
         this.sendPost(params, this.processSession);
         if (this._timers.session) {
             delete this._timers.session;
@@ -236,7 +247,7 @@ const TransmissionDaemonMonitor = new Lang.Class({
 
     torrentAction: function(action, torrent_id) {
         let params = {
-            method: "torrent-%s".format(action),
+            method: 'torrent-%s'.format(action),
         };
         if (torrent_id) {
             params.arguments = {
@@ -245,26 +256,29 @@ const TransmissionDaemonMonitor = new Lang.Class({
                 ],
             };
         }
+
         this.sendPost(params, this.onTorrentAction);
     },
 
     torrentAdd: function(url) {
         let params = {
-            method: "torrent-add",
+            method: 'torrent-add',
             arguments: {
                 filename: url,
             },
         };
+
         this.sendPost(params, this.onTorrentAdd);
     },
 
     setAltSpeed: function(enable) {
         let params = {
-            method: "session-set",
+            method: 'session-set',
             arguments: {
                 'alt-speed-enabled': enable,
             },
         };
+
         this.sendPost(params, this.onSessionAction);
     },
 
@@ -386,6 +400,7 @@ const TransmissionDaemonMonitor = new Lang.Class({
                 return this._torrents[i];
             }
         }
+
         return null;
     },
 
@@ -401,13 +416,13 @@ const TransmissionDaemonIndicator = new Lang.Class({
     Extends: PanelMenu.Button,
 
     _init: function() {
-        this.parent(0.0, "transmission-daemon");
+        this.parent(0.0, 'transmission-daemon');
 
         this._torrents = {};
         this._monitor = transmissionDaemonMonitor;
-        this._host = "";
-        this._url = "";
-        this._server_type = "daemon";
+        this._host = '';
+        this._url = '';
+        this._server_type = 'daemon';
         this._state = ErrorType.CONNECTING;
         this._nb_torrents = 0;
         this._always_show = false;
@@ -459,12 +474,12 @@ const TransmissionDaemonIndicator = new Lang.Class({
         this.setMenu(menu);
 
         this.updateOptions();
-        let settingsId = gsettings.connect("changed", Lang.bind(this, function() {
+        let settingsId = gsettings.connect('changed', Lang.bind(this, function() {
             this.updateOptions();
             this.updateStats(true);
         }));
 
-        this.connect("destroy", Lang.bind(null, function() {
+        this.connect('destroy', Lang.bind(null, function() {
             gsettings.disconnect(settingsId);
         }));
 
@@ -524,10 +539,13 @@ const TransmissionDaemonIndicator = new Lang.Class({
         } else {
             this.show();
         }
+
         this._state = type;
         this.removeTorrents();
+
         this._icon.icon_name = errorIcon;
-        this._status.text = "";
+        this._status.text = '';
+
         this.menu.controls.setInfo(error);
         this.refreshControls(true);
     },
@@ -551,18 +569,21 @@ const TransmissionDaemonIndicator = new Lang.Class({
                 '</method>' +
             '</interface></node>';
         const DBusProxy = Gio.DBusProxy.makeProxyWrapper(DBusIface);
+
         let proxy = new DBusProxy(Gio.DBus.session, 'org.freedesktop.DBus',
                                   '/org/freedesktop/DBus');
+
         proxy.ListNamesRemote(Lang.bind(this, function(names) {
-            this._server_type = "daemon";
+            this._server_type = 'daemon';
             for (let n in names[0]) {
                 let name = names[0][n];
                 if (name.search('com.transmissionbt.transmission') > -1 &&
-                      (this._host == "localhost" || this._host == "127.0.0.1")) {
-                    this._server_type = "client";
+                      (this._host == 'localhost' || this._host == '127.0.0.1')) {
+                    this._server_type = 'client';
                     break;
                 }
             }
+
             this.refreshControls(true);
         }));
 
@@ -570,8 +591,8 @@ const TransmissionDaemonIndicator = new Lang.Class({
 
     updateStats: function(dontChangeState) {
         let stats = this._monitor.getStats();
-        let stats_text = "";
-        let info_text = "";
+        let stats_text = '';
+        let info_text = '';
 
         this._nb_torrents = stats.torrentCount;
 
@@ -581,42 +602,39 @@ const TransmissionDaemonIndicator = new Lang.Class({
 
         if (stats.downloadSpeed > 10000) {
             if (stats_text && this._status_show_icons) {
-                stats_text += " ";
+                stats_text += ' ';
             }
             if (this._status_show_icons) {
                 stats_text += downArrow;
             }
             if (this._status_show_numeric) {
-                stats_text += " %s/s".format(readableSize(stats.downloadSpeed));
+                stats_text += ' %s/s'.format(readableSize(stats.downloadSpeed));
             }
         }
         if (stats.uploadSpeed > 2000) {
             if (this._status_show_icons && this._status_show_numeric) {
-                stats_text += " ";
+                stats_text += ' ';
             }
             if (this._status_show_icons) {
                 stats_text += upArrow;
             }
             if (this._status_show_numeric) {
-                stats_text += " %s/s".format(readableSize(stats.uploadSpeed));
+                stats_text += ' %s/s'.format(readableSize(stats.uploadSpeed));
             }
         }
 
         if (stats_text) {
-            stats_text = " " + stats_text;
+            stats_text = ' ' + stats_text;
         }
 
         this._status.text = stats_text;
 
         if (this._nb_torrents > 0) {
-            info_text = "%s %s/s / %s %s/s".format(
-                                            downArrow,
-                                            readableSize(stats.downloadSpeed),
-                                            upArrow,
-                                            readableSize(stats.uploadSpeed));
-        }
-        else {
-            info_text = _("No torrent");
+            info_text = '%s %s/s / %s %s/s'.format(
+                downArrow, readableSize(stats.downloadSpeed), upArrow,
+                readableSize(stats.uploadSpeed));
+        } else {
+            info_text = _('No torrent');
         }
 
         this.menu.controls.setInfo(info_text);
@@ -634,22 +652,24 @@ const TransmissionDaemonIndicator = new Lang.Class({
         }
 
         if (this._state == ErrorType.NO_ERROR) {
-            if (this._server_type == "daemon") {
+            if (this._server_type === 'daemon') {
                 this.menu.controls.addControl(this._web_btn, 0);
             } else {
                 this.menu.controls.addControl(this._client_btn, 0);
             }
+
             this.menu.controls.addControl(this._add_btn);
+
             if (this._nb_torrents > 0) {
                 this.menu.controls.addControl(this._stop_btn);
                 this.menu.controls.addControl(this._start_btn);
                 this.menu.filters.show();
-            }
-            else {
+            } else {
                 this.menu.controls.removeControl(this._stop_btn);
                 this.menu.controls.removeControl(this._start_btn);
                 this.menu.filters.hide();
             }
+
             this.menu.bottom_controls.addControl(this._turtle_btn);
             this.menu.bottom_controls.addControl(this._display_btn);
         }
@@ -659,11 +679,11 @@ const TransmissionDaemonIndicator = new Lang.Class({
     },
 
     stopAll: function() {
-        this._monitor.torrentAction("stop");
+        this._monitor.torrentAction('stop');
     },
 
     startAll: function() {
-        this._monitor.torrentAction("start");
+        this._monitor.torrentAction('start');
     },
 
     launchWebUI: function() {
@@ -679,21 +699,14 @@ const TransmissionDaemonIndicator = new Lang.Class({
         let workspace_index = global.screen.get_active_workspace_index();
         let workspace = global.screen.get_active_workspace();
 
-        // Window is on the current workspace
         if (app.is_on_workspace(workspace)) {
-            // If the window is currently focused
-            // minimize it and close the menu
-            if (appWin && global.display.focus_window == appWin) // Bring the window to front
-            {
+            if (appWin && global.display.focus_window == appWin) {
                 appWin.minimize();
                 this.menu.close();
             } else {
                 app.activate_full(-1, 0);
             }
-        }
-        else {
-            // Change to the current workspace and
-            // bring to front
+        } else {
             if (appWin) {
                 appWin.change_workspace_by_index(workspace_index, false,
                                                  global.get_current_time());
@@ -711,6 +724,7 @@ const TransmissionDaemonIndicator = new Lang.Class({
                 return win;
             }
         }
+
         return false;
     },
 
@@ -732,11 +746,8 @@ const TransmissionDaemonIndicator = new Lang.Class({
     },
 
     updateList: function(to_remove) {
-        // Remove old torrents
         this.cleanTorrents(to_remove);
-        // Update all torrents properties
         this.updateTorrents();
-        // Filter torrents
         this.menu.filters.filterByState();
     },
 
@@ -780,6 +791,7 @@ const TransmissionDaemonIndicator = new Lang.Class({
         if (visible === false) {
             this._torrents[torrent.id].hide();
         }
+
         this.menu.addMenuItem(this._torrents[torrent.id]);
     },
 
@@ -793,9 +805,8 @@ const TransmissionDaemonIndicator = new Lang.Class({
     },
 
     toString: function() {
-        return "[object TransmissionDaemonIndicator]";
+        return '[object TransmissionDaemonIndicator]';
     },
-
 });
 
 const TransmissionTorrentSmall = new Lang.Class({
@@ -809,7 +820,7 @@ const TransmissionTorrentSmall = new Lang.Class({
         });
 
         this._params = params;
-        this._info = "";
+        this._info = '';
 
         this.box = new St.BoxLayout({
             vertical: false,
