@@ -39,7 +39,7 @@ function init() {
             type: 'i',
         },
         ssl: {
-            label: _("Use SSL ?"),
+            label: _("Use SSL?"),
             type: 'b',
         },
         user: {
@@ -74,41 +74,37 @@ function init() {
 }
 
 function buildPrefsWidget() {
-    let frame = new Gtk.Box({
-        orientation: Gtk.Orientation.VERTICAL,
-        border_width: 10,
-    });
     let vbox = new Gtk.Box({
         orientation: Gtk.Orientation.VERTICAL,
         margin: 20,
         margin_top: 10,
     });
-    let hbox;
 
     for (let setting in settings) {
-        if (settings[setting].type == 's') {
+        let hbox;
+        if (settings[setting].type === 's') {
             hbox = createStringSetting(setting);
-        }
-        if (settings[setting].type == "i") {
+        } else if (settings[setting].type === 'i') {
             hbox = createIntSetting(setting);
-        }
-        if (settings[setting].type == "b") {
+        } else if (settings[setting].type === 'b') {
             hbox = createBoolSetting(setting);
+        } else {
+            log(`Unknown type ${settings[setting].type} for setting ${setting}`);
         }
+
         vbox.add(hbox);
     }
 
+    let frame = new Gtk.Box({
+        orientation: Gtk.Orientation.VERTICAL,
+        border_width: 10,
+    });
     frame.add(vbox);
     frame.show_all();
     return frame;
 }
 
 function createStringSetting(setting) {
-    let hbox = new Gtk.Box({
-        orientation: Gtk.Orientation.HORIZONTAL,
-        margin_top: 5,
-    });
-
     let setting_label = new Gtk.Label({
         label: settings[setting].label,
         xalign: 0,
@@ -121,7 +117,7 @@ function createStringSetting(setting) {
         gsettings.set_string(setting.replace('_', '-'), entry.text);
     });
 
-    if (settings[setting].mode == "passwd") {
+    if ('mode' in settings[setting] && settings[setting].mode === 'passwd') {
         setting_string.set_visibility(false);
     }
 
@@ -130,31 +126,27 @@ function createStringSetting(setting) {
         setting_string.set_tooltip_text(settings[setting].help);
     }
 
-    hbox.pack_start(setting_label, true, true, 0);
-    hbox.add(setting_string);
-
-    return hbox;
-}
-
-function createIntSetting(setting) {
-
     let hbox = new Gtk.Box({
         orientation: Gtk.Orientation.HORIZONTAL,
         margin_top: 5,
     });
+    hbox.pack_start(setting_label, true, true, 0);
+    hbox.add(setting_string);
+    return hbox;
+}
 
+function createIntSetting(setting) {
     let setting_label = new Gtk.Label({
         label: settings[setting].label,
         xalign: 0,
     });
 
-    let adjustment = new Gtk.Adjustment({
-        lower: 1,
-        upper: 65535,
-        step_increment: 1,
-    });
     let setting_int = new Gtk.SpinButton({
-        adjustment: adjustment,
+        adjustment: new Gtk.Adjustment({
+            lower: 1,
+            upper: 65535,
+            step_increment: 1,
+        }),
         snap_to_ticks: true,
     });
     setting_int.set_value(gsettings.get_int(setting.replace('_', '-')));
@@ -167,18 +159,16 @@ function createIntSetting(setting) {
         setting_int.set_tooltip_text(settings[setting].help);
     }
 
-    hbox.pack_start(setting_label, true, true, 0);
-    hbox.add(setting_int);
-
-    return hbox;
-}
-
-function createBoolSetting(setting) {
     let hbox = new Gtk.Box({
         orientation: Gtk.Orientation.HORIZONTAL,
         margin_top: 5,
     });
+    hbox.pack_start(setting_label, true, true, 0);
+    hbox.add(setting_int);
+    return hbox;
+}
 
+function createBoolSetting(setting) {
     let setting_label = new Gtk.Label({
         label: settings[setting].label,
         xalign: 0,
@@ -196,8 +186,11 @@ function createBoolSetting(setting) {
         setting_switch.set_tooltip_text(settings[setting].help);
     }
 
+    let hbox = new Gtk.Box({
+        orientation: Gtk.Orientation.HORIZONTAL,
+        margin_top: 5,
+    });
     hbox.pack_start(setting_label, true, true, 0);
     hbox.add(setting_switch);
-
     return hbox;
 }

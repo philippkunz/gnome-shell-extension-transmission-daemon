@@ -21,6 +21,8 @@ ${EXTDIR}/${NAME}: ${NAME}/schemas/gschemas.compiled ${LOCALES_DST} ${NAME} Make
 	cp -r ${NAME} ${EXTDIR}/${NAME}
 	gnome-shell-extension-tool -e ${NAME}
 
+reinstall: uninstall install
+
 uninstall:
 	gnome-shell-extension-tool -d ${NAME}
 	rm -r ${EXTDIR}/${NAME}
