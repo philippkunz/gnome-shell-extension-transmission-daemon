@@ -673,9 +673,8 @@ const TransmissionDaemonIndicator = new Lang.Class({
             this.menu.bottom_controls.addControl(this._turtle_btn);
             this.menu.bottom_controls.addControl(this._display_btn);
         }
-        else {
-            this.menu.controls.addControl(this._pref_btn);
-        }
+
+        this.menu.controls.addControl(this._pref_btn);
     },
 
     stopAll: function() {
