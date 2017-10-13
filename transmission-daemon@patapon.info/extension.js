@@ -177,8 +177,7 @@ const TransmissionDaemonMonitor = new Lang.Class({
         let message = Soup.Message.new('POST', this._url);
         message.set_request("application/x-www-form-urlencoded",
                             Soup.MemoryUse.COPY,
-                            JSON.stringify(data),
-                            JSON.stringify(data).length);
+                            JSON.stringify(data));
         if (this._session_id) {
             message.request_headers.append("X-Transmission-Session-Id",
                                            this._session_id);
