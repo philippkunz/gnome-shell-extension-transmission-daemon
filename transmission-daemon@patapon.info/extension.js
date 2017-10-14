@@ -862,7 +862,7 @@ const TransmissionTorrentSmall = new Lang.Class({
     },
 
     toString: function() {
-        return "[object TransmissionTorrentSmall <%s>]".format(this._params.name);
+        return '[object TransmissionTorrentSmall <%s>]'.format(this._params.name);
     },
 
     close: function() {},
