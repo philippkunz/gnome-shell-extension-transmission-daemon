@@ -22,9 +22,16 @@ If you have `gnome-shell-devel` installed, the extension will start working
 immediately. If not, restart the shell (atf-f2, type "r") to enable it.
 
 ### Older Versions of Gnome Shell
-- the latest version supporting `gnome-shell` < 3.10 is tag 1.0.0
-- the latest version supporting `gnome-shell` < 3.16 is tag 2.0.0
-- the latest version supporting `gnome-shell` < 3.20 is tag 3.0.0
+The best way to find the correct version to install for support for older Gnome
+Shell versions is to check
+[this page](https://extensions.gnome.org/extension/365/transmission-daemon-indicator/)
+under the `Versions` header. All previously released versions should be
+accessible as zipfile downloads there.
+
+Some older versions have been tagged in this repo:
+-- the latest version supporting `gnome-shell` < 3.10 is tag 1.0.0
+-- the latest version supporting `gnome-shell` < 3.16 is tag 2.0.0
+-- the latest version supporting `gnome-shell` < 3.20 is tag 3.0.0
 
 To install for those versions of `gnome-shell`, please follow the manual process
 outlined above after checking out one of the above tags.
