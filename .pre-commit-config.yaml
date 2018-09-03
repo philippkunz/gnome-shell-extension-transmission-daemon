@@ -1,6 +1,6 @@
 repos:
 -   repo: git://github.com/pre-commit/pre-commit-hooks
-    sha: v1.2.3
+    rev: v1.4.0
     hooks:
     -   id: check-case-conflict
     -   id: check-executables-have-shebangs
@@ -19,11 +19,11 @@ repos:
         args: [--fix=lf]
     -   id: trailing-whitespace
 -   repo: git://github.com/pre-commit/mirrors-fixmyjs
-    sha: v2.0.0
+    rev: v2.0.0
     hooks:
     -   id: fixmyjs
 -   repo: git://github.com/pre-commit/mirrors-jshint
-    sha: v2.9.5
+    rev: v2.9.6
     hooks:
     -   id: jshint
     # TODO: enable "eqeqeq", "forin", "latedef", "unused"
