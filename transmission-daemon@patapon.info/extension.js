@@ -690,10 +690,13 @@ const TransmissionDaemonIndicator = new Lang.Class({
         let app = appSys.lookup_app('transmission-gtk.desktop');
         let appWin = this.findAppWindow(app);
         let workspaceManager;
-        if (global.screen)
-			workspaceManager = global.screen; // Mutter < 3.29
-		else
-			workspaceManager = global.workspace_manager; // Mutter >= 3.29
+        if (global.screen) {
+            // Mutter < 3.29
+            workspaceManager = global.screen;
+        } else {
+            // Mutter >= 3.29
+            workspaceManager = global.workspace_manager;
+        }
         let workspace_index = workspaceManager.get_active_workspace_index();
         let workspace = workspaceManager.get_active_workspace();
 
