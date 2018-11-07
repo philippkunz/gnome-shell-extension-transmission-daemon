@@ -1,3 +1,9 @@
+# Spanish translations for gnome-shell-extension-transmission-daemon package
+# Traducciones al español para gnome-shell-extension-transmission-daemon.
+# Copyright (C) 2013 THE gnome-shell-extension-transmission-daemon'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-shell-extension-transmission-daemon package.
+# Cristian Beroiza <cberoiza@gmail.com>, 2013.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-shell-extension-transmission-daemon\n"
@@ -23,8 +29,7 @@ msgstr "Nombre del servidor"
 
 #: ../../../prefs.js:33
 msgid "Hostname or IP where Transmission is running"
-msgstr ""
-"Nombre o dirección IP de la maquina donde Transmission se está ejecutando"
+msgstr "Nombre o dirección IP de la maquina donde Transmission se está ejecutando"
 
 #: ../../../prefs.js:34
 msgid "Port"

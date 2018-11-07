@@ -1,12 +1,12 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Hungarian translations for gnome-shell-extension-transmission-daemon package
+# Magyar fordítások a gnome-shell-extension-transmission-daemon számára.
+# Copyright (C) 2018 THE gnome-shell-extension-transmission-daemon'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-shell-extension-transmission-daemon package.
+# ViBE <@ViBE-HU>, 2018.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: gnome-shell-extension-transmission-daemon\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-10-07 00:37-0300\n"
 "PO-Revision-Date: 2018-10-11 17:37+0200\n"
@@ -16,6 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
 
 #: extension.js:95
 msgid "All"
@@ -146,7 +147,7 @@ msgstr "%s van hátra"
 #: extension.js:956
 #, javascript-format
 msgid "%s of %s (%s) - %s"
-msgstr ""
+msgstr "%s of %s (%s) - %s"
 
 #: extension.js:964
 #, javascript-format
@@ -156,7 +157,7 @@ msgstr "Feltöltés (aktív letöltők: %s/%s) - %s %s/s"
 #: extension.js:982
 #, javascript-format
 msgid "Tracker returned a warning: %s"
-msgstr ""
+msgstr "Tracker returned a warning: %s"
 
 #: extension.js:985
 #, javascript-format
