@@ -89,7 +89,7 @@ function buildPrefsWidget() {
         } else if (settings[setting].type === 'b') {
             hbox = createBoolSetting(setting);
         } else {
-            log("Unknown type ${settings[setting].type} for setting ${setting}");
+            log("Unknown type " + settings[setting].type + " for setting " + setting);
         }
 
         vbox.add(hbox);

@@ -284,7 +284,7 @@ const TransmissionDaemonMonitor = new Lang.Class({
 
     processList: function(session, message) {
         if (message.status_code !== 200) {
-            log("invalid response to processList: ${message}");
+            log("invalid response to processList: " + message);
             return;
         }
 
@@ -334,7 +334,7 @@ const TransmissionDaemonMonitor = new Lang.Class({
 
     processSession: function(session, message) {
         if (message.status_code !== 200) {
-            log("invalid response to processSession: ${message}");
+            log("invalid response to processSession: " + message);
             return;
         }
 
