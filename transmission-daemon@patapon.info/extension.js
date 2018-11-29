@@ -1312,18 +1312,22 @@ const TorrentsControls = new Lang.Class({
                 this.ctrl_btns.add_actor(button.actor);
             }
             this.actor.show();
-            button.actor.connect('notify::hover', Lang.bind(this, function(btn) {
-                this.hover = btn.hover;
-                if (this.hover) {
-                    if (btn._delegate._info != this.ctrl_info.text) {
-                        this._old_info = this.ctrl_info.text;
-                    }
-                    this.ctrl_info.text = btn._delegate._info;
-                } else {
-                    this.ctrl_info.text = this._old_info;
-                }
-            }));
+            this.connectHoverInfo(button);
         }
+    },
+
+    connectHoverInfo: function(button) {
+        button.actor.connect('notify::hover', Lang.bind(this, function(btn) {
+            this.hover = btn.hover;
+            if (this.hover) {
+                if (btn._delegate._info != this.ctrl_info.text) {
+                    this._old_info = this.ctrl_info.text;
+                }
+                this.ctrl_info.text = btn._delegate._info;
+            } else {
+                this.ctrl_info.text = this._old_info;
+            }
+        }));
     },
 
     removeControl: function(button, name) {
@@ -1364,10 +1368,17 @@ const TorrentsTopControls = new Lang.Class({
             hint_text: _("Torrent URL or Magnet link"),
             can_focus: true,
         });
-        this.add_btn = new ControlButton("object-select", "",
-                                         Lang.bind(this, this.torrentAdd));
+        this.upload_btn = new ControlButton("system-file-manager",
+                _('choose torrent file to upload'),
+                Lang.bind(this, this.torrentChooseFileToUpload));
+        this.connectHoverInfo(this.upload_btn);
+        this.add_btn = new ControlButton("object-select",
+                _('add torrent from link in text field'),
+                Lang.bind(this, this.torrentAdd));
+        this.connectHoverInfo(this.add_btn);
         this.add_box.hide();
 
+        this.add_box.add(this.upload_btn.actor);
         this.add_box.add(this.add_entry, { expand: true, });
         this.add_box.add(this.add_btn.actor);
 
@@ -1397,6 +1408,18 @@ const TorrentsTopControls = new Lang.Class({
             this.add_box_btn.actor.remove_style_pseudo_class('active');
         }
         this.add_box.hide();
+    },
+
+    torrentChooseFileToUpload: function() {
+        var filechooser = new Gtk.FileChooserDialog({
+            title: _('choose torrent file to upload'),
+        });
+        filechooser.add_button(Gtk.STOCK_OPEN, 1);
+        filechooser.set_default_response(1);
+        if (filechooser.run() == 1) {
+            this.add_entry.text = filechooser.get_filenames();
+        }
+        filechooser.destroy();
     },
 
     torrentAdd: function() {

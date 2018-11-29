@@ -181,6 +181,14 @@ msgstr ""
 msgid "days"
 msgstr ""
 
+#: extension.js:1372
+msgid "choose torrent file to upload"
+msgstr ""
+
+#: extension.js:1376
+msgid "add torrent from link in text field"
+msgstr ""
+
 #: extension.js:1596
 msgid "day"
 msgstr ""
