@@ -16,6 +16,7 @@
 'use strict';  /* jshint -W097 */
 
 const Clutter = imports.gi.Clutter;
+const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
 const Gtk = imports.gi.Gtk;
 const Lang = imports.lang;
@@ -260,15 +261,19 @@ const TransmissionDaemonMonitor = new Lang.Class({
         this.sendPost(params, this.onTorrentAction);
     },
 
-    torrentAdd: function(url) {
-        let params = {
+    torrentAdd: function(args) {
+        this.sendPost({
             method: 'torrent-add',
-            arguments: {
-                filename: url,
-            },
-        };
+            arguments: args
+        }, this.onTorrentAdd);
+    },
 
-        this.sendPost(params, this.onTorrentAdd);
+    torrentAddUrl: function(url) {
+        this.torrentAdd({ filename: url });
+    },
+
+    torrentAddFile: function(contents) {
+        this.torrentAdd({ metainfo: GLib.base64_encode(contents) });
     },
 
     setAltSpeed: function(enable) {
@@ -374,8 +379,9 @@ const TransmissionDaemonMonitor = new Lang.Class({
     },
 
     onTorrentAdd: function(session, message) {
-        let result = JSON.parse(message.response_body.data);
-        let added = !!result.arguments['torrent-added'];
+        let response = JSON.parse(message.response_body.data);
+        let added = !!response.arguments['torrent-added'];
+        if (!added) log("torrent not added, result = " + response.result);
         transmissionDaemonIndicator.torrentAdded(added);
     },
 
@@ -1424,12 +1430,22 @@ const TorrentsTopControls = new Lang.Class({
 
     torrentAdd: function() {
         let url = this.add_entry.text;
-        if (url.match(/^http/) || url.match(/^magnet:/)) {
-            this.add_entry.add_style_pseudo_class('inactive');
-            transmissionDaemonMonitor.torrentAdd(url);
-        }
-        else {
-            this.torrentAdded(false);
+        if (url == this.add_entry.hint_text) return;
+        this.add_entry.add_style_pseudo_class('inactive');
+        if (url.match(/^https?:/) || url.match(/^magnet:/)) {
+            transmissionDaemonMonitor.torrentAddUrl(url);
+        } else {
+            let file = Gio.File.parse_name(url);
+            file.load_contents_async(null, Lang.bind(this, function(file, res) {
+                try {
+                    let contents = file.load_contents_finish(res)[1];
+                    log("torrent file contents loaded. size = " + contents.length);
+                    transmissionDaemonMonitor.torrentAddFile(contents);
+                } catch (error) {
+                    log("error: " + error);
+                    this.torrentAdded(false);
+                }
+            }));
         }
     },
 
