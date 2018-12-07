@@ -1417,20 +1417,22 @@ const TorrentsTopControls = new Lang.Class({
     },
 
     torrentChooseFileToUpload: function() {
-        var filechooser = new Gtk.FileChooserDialog({
+        let filechooser = new Gtk.FileChooserDialog({
             title: _('choose torrent file to upload'),
         });
         filechooser.add_button(Gtk.STOCK_OPEN, 1);
         filechooser.set_default_response(1);
-        if (filechooser.run() == 1) {
-            this.add_entry.text = filechooser.get_filenames();
-        }
+        let file = filechooser.run() == 1 ? filechooser.get_filenames() : '';
         filechooser.destroy();
+        if (file) {
+            this.add_entry.text = file;
+            this.torrentAdd();
+        }
     },
 
     torrentAdd: function() {
         let url = this.add_entry.text;
-        if (url == this.add_entry.hint_text) return;
+        if (!url || url == this.add_entry.hint_text) return;
         this.add_entry.add_style_pseudo_class('inactive');
         if (url.match(/^https?:/) || url.match(/^magnet:/)) {
             transmissionDaemonMonitor.torrentAddUrl(url);
